@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>USER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<!-- Nút cuộn lên đầu trang -->
+<button onclick="topFunction()" id="btn-to-top" title="Go to top">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container-fluid mt-5 pt-4">
+    <h2 class="text-center my-4">Danh sách người dùng</h2>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <form th:action="@{/user/page/1}" method="get"
+          class="d-flex justify-content-center align-items-center mb-4">
+        <label class="me-2">Tìm:</label>
+        <input type="text" name="keyword" th:value="${keywordU}" class="form-control w-25 me-2"
+               placeholder="Nhập tên hoặc email">
+        <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+        <button type="button" class="btn btn-secondary" onclick="clearFilter()">Xóa lọc</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Họ</th>
+                <th>Tên</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${listUsers}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.firstName}">Nguyễn</td>
+                <td th:text="${user.lastName}">Văn A</td>
+                <td th:text="${user.email}">example@email.com</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center" th:if="${totalItemsU > 0}">
+        Hiển thị người dùng [[${#numbers.formatInteger(((currentPageU - 1) * 10 + 1), 0)}]]
+        đến [[${#numbers.formatInteger(((currentPageU - 1) * 10 + listUsers.size()), 0)}]]
+        / Tổng [[${totalItemsU}]]
+    </div>
+
+    <!-- Phân trang -->
+    <div class="mt-3 d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPageU == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/users/page/1(keyword=${keywordU})}">Đầu</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPageU == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/users/page/{p}(p=${currentPageU - 1}, keyword=${keywordU})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPagesU)}"
+                th:classappend="${i == currentPageU} ? 'active'">
+                <a class="page-link" th:href="@{/admin/users/page/{p}(p=${i}, keyword=${keywordU})}"
+                   th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPageU == totalPagesU} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/users/page/{p}(p=${currentPageU + 1}, keyword=${keywordU})}">Tiếp</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPageU == totalPagesU} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/users/page/{p}(p=${totalPagesU}, keyword=${keywordU})}">Cuối</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/main.js}">
+    function clearFilter() {
+        window.location.href = '/user';
+    }
+</script>
+</body>
+</html>

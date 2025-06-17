@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm danh mục</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4" th:text="${pageTitle != null} ? ${pageTitle} : 'Thêm danh mục mới'"></h2>
+
+    <form th:action="@{/categories/save}" method="post" th:object="${category}" class="col-md-6 offset-md-3">
+
+        <div class="mb-3">
+            <label class="form-label">Tên danh mục:</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="Nhập tên danh mục" required>
+            <div class="text-danger mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="d-grid">
+            <button class="btn btn-success" type="submit">
+                <i class="fa-solid fa-check"></i> Lưu danh mục
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-3">
+        <a th:href="@{/categories}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+</body>
+</html>

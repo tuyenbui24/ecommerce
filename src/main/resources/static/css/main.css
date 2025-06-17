@@ -1,0 +1,239 @@
+.header {
+    background: linear-gradient(to bottom, #feecc7, #fff);
+    padding-top: 10px;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+}
+
+.mt-content {
+    margin-top: 110px;
+}
+
+.text-primary {
+    color: #37176f !important;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+}
+
+.nav-link:hover,
+a:hover:not(.btn):not(.dropdown-item) {
+    color: #fcaf17 !important;
+    transition: color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #fcaf17 !important;
+}
+
+.btn-warning {
+    background-color: #fcaf17;
+    border-color: #fcaf17;
+}
+
+.btn-warning:hover {
+    border: 1px solid #fff;
+    background-color: #e69c08;
+}
+
+.form-control:focus {
+    border-color: #fcaf17;
+    box-shadow: 0 0 0 0.25rem rgba(252, 175, 23, 0.25);
+}
+
+.form-control:hover {
+    border-color: #fcaf17;
+}
+
+.badge {
+    min-width: 20px;
+}
+
+#menu-list.show-menu {
+    display: block !important;
+}
+
+.free {
+    width: 40px;
+    text-align: center;
+    background: #fcaf17;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    align-items: center;
+    padding: 0 0;
+}
+
+.dropdown-menu[aria-labelledby="cartDropdown"] {
+    width: 620px !important;
+    max-width: 90vw;
+}
+.topbar-bottom {
+    font-size: 12px;
+}
+
+.header-mb {
+    color: #fcaf17;
+}
+
+.ctn-content {
+    margin-top: 80px;
+}
+
+/* FORM ĐĂNG KÝ / ĐĂNG NHẬP */
+.main {
+    display: none;
+    padding-top: 140px;
+    background: #e8b46b;
+    min-height: 100vh;
+    justify-content: center;
+}
+
+.form-register,
+.form-login {
+    background-color: #fff;
+    margin-top: 8rem;
+    padding: 32px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-register h3,
+.form-login h3 {
+    color: #1f1f6b;
+}
+
+.form-register input,
+.form-login input {
+    font-size: 16px;
+}
+
+.form-submit {
+    outline: none;
+    background-color: #fcaf17;
+    margin-top: 12px;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form-submit:hover {
+    background-color: #1ac7b6;
+}
+
+.login-form {
+    color: #fcaf17;
+}
+
+.form-register img,
+.form-login img {
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #feefd0;
+}
+
+.mt-3 a,
+.mt-4 a {
+    color: #fcaf17;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mt-3 a:hover,
+.mt-4 a:hover {
+    color: #1ac7b6;
+}
+
+.rounded.border.m-1 {
+    padding: 5px;
+    background-color: #fff;
+    transition: transform 0.2s ease-in-out;
+}
+
+.rounded.border.m-1:hover {
+    transform: scale(1.05);
+}
+
+
+/* Media queries */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 1040px !important;
+    }
+    .dropdown-menu[aria-labelledby="cartDropdown"] {
+        width: 496px !important;
+    }
+
+    .nav-item {
+        margin-right: 10px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    #menu-list {
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .header-nav {
+        width: 100%;
+        text-align: center;
+    }
+
+    #menu-list .nav-main {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 10px;
+    }
+
+    #menu-list .nav-item {
+        margin-right: 0 !important;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    #menu-list .nav-link {
+        display: block;
+        padding: 10px 0;
+    }
+
+
+    #menu-list .dropdown-menu {
+        display: none;
+        position: static !important;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        width: 100%;
+        padding-left: 20px;
+        list-style: none;
+    }
+
+    #menu-list .dropdown-menu.show {
+        display: block;
+    }
+
+    #menu-list .dropdown-item {
+        padding: 5px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: static !important;
+        float: none;
+        width: auto;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+}

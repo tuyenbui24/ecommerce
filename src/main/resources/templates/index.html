@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content pt-5">
+    <h2 class="text-center mb-4">Sản phẩm nổi bật</h2>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="row">
+        <div class="col-md-3 mb-4" th:each="product : ${products}">
+            <div class="card h-100 shadow-sm">
+                <!-- Link đến trang chi tiết -->
+                <a th:href="@{'/product/' + ${product.id}}" class="text-decoration-none text-dark">
+                    <img th:if="${product.image != null}"
+                         th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
+                         class="card-img-top" alt="product image"
+                         style="height: 220px; object-fit: cover;">
+                    <div th:if="${product.image == null}" class="text-center my-5">
+                        <i class="fa-solid fa-box fa-3x text-muted"></i>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="card-title" th:text="${product.name}">Tên sản phẩm</h6>
+                        <p class="card-text fw-bold text-danger" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">Giá</p>
+                    </div>
+                </a>
+
+                <!-- Nút thêm giỏ hàng -->
+                <div class="card-footer bg-white border-0">
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm w-100 btn-add-to-cart"
+                            th:data-product-id="${product.id}">
+                        <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

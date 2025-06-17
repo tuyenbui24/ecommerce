@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách danh mục</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<button onclick="topFunction()" id="btn-to-top" title="Go to top">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container-fluid mt-5 pt-4">
+    <h2 class="text-center mb-4">Quản lý danh mục</h2>
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <div class="mb-3 text-end">
+        <a th:href="@{/categories/new}" class="btn btn-success">
+            <i class="fa-regular fa-square-plus"></i> Thêm danh mục
+        </a>
+    </div>
+
+    <form th:action="@{/categories/page/1}" method="get"
+          class="d-flex justify-content-center align-items-center mb-4">
+        <input type="text" name="keyword" th:value="${keyword}" class="form-control w-25 me-2"
+               placeholder="Tìm theo tên danh mục">
+        <button class="btn btn-primary me-2" type="submit">Tìm kiếm</button>
+        <button type="button" class="btn btn-secondary" onclick="clearFilter()">Xóa lọc</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Tên danh mục</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="category : ${listCategories}">
+                <td th:text="${category.id}"></td>
+                <td th:text="${category.name}"></td>
+                <td>
+                    <a th:href="@{'/categories/edit/' + ${category.id}}" class="text-warning me-3">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a th:href="@{'/categories/delete/' + ${category.id}}"
+                       th:onclick="'return confirm(\'Bạn có chắc muốn xoá danh mục ID ' + ${category.id} + '?\')'"
+                       class="text-danger">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Thông tin phân trang -->
+    <div class="text-center mt-2" th:if="${totalItems > 0}">
+        Hiển thị danh mục [[${start}]] đến [[${end}]] / Tổng [[${totalItems}]]
+    </div>
+
+    <!-- Phân trang -->
+    <div class="d-flex justify-content-center mt-3" th:if="${totalItems > 0}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories/page/1(keyword=${keyword})}">Đầu</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories/page/{p}(p=${currentPage - 1}, keyword=${keyword})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/categories/page/{p}(p=${i}, keyword=${keyword})}"
+                   th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories/page/{p}(p=${currentPage + 1}, keyword=${keyword})}">Tiếp</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories/page/{p}(p=${totalPages}, keyword=${keyword})}">Cuối</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+<script th:inline="javascript">
+    function clearFilter() {
+        window.location.href = /*[[@{/categories}]]*/ "/categories";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container py-5">
+    <div class="logo">
+        <a class="logo-img" th:href="@{/}">
+            <img th:src="@{/img/logo.svg}" alt="Logo" />
+        </a>
+    </div>
+    <h2 class="text-center mb-5">Giỏ hàng</h2>
+    <div class="row">
+
+        <!-- Thông báo -->
+        <div th:if="${message}" class="alert alert-success text-center">
+            [[${message}]]
+        </div>
+        <div th:if="${error}" class="alert alert-danger text-center">
+            [[${error}]]
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="col-md-8">
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label fw-bold" for="selectAll">Chọn tất cả</label>
+            </div>
+
+            <div th:if="${cart.items.empty}" class="alert alert-warning text-center">
+                Giỏ hàng trống!
+            </div>
+
+            <div th:each="item : ${cart.items}" th:id="'card-' + ${item.id}" class="card mb-4 p-3">
+                <div class="d-flex align-items-center">
+                    <input type="checkbox" class="form-check-input item-checkbox"
+                           th:id="'item-' + ${item.id}" th:value="${item.id}"
+                           th:data-price="${item.productPrice}" th:data-quantity="${item.quantity}">
+
+                    <img th:if="${item.image != null and item.image != ''}"
+                         th:src="@{'/products/product-image/' + ${item.productId} + '/' + ${item.image}}"
+                         class="img-thumbnail me-4"
+                         style="width: 100px; height: 100px; object-fit: cover;" th:alt="${item.productName}">
+                    <img th:unless="${item.image != null and item.image != ''}"
+                         th:src="@{/img/no-image.png}"
+                         class="img-thumbnail me-4"
+                         style="width: 100px; height: 100px; object-fit: cover;" th:alt="${item.productName}">
+
+                    <div class="flex-grow-1">
+                        <h5 th:text="${item.productName}" class="mb-2"></h5>
+
+                        <div class="mb-2">
+                            <select class="form-select form-select-sm" disabled>
+                                <option selected>Màu / Size</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group" style="width: 120px;">
+                            <button class="btn btn-outline-secondary btn-sm btn-update-qty"
+                                    type="button" th:data-item-id="${item.id}" data-action="decrease">-</button>
+                            <input type="text" class="form-control text-center form-control-sm mx-1"
+                                   th:value="${item.quantity}" th:id="'qty-' + ${item.id}" readonly>
+                            <button class="btn btn-outline-secondary btn-sm btn-update-qty"
+                                    type="button" th:data-item-id="${item.id}" data-action="increase">+</button>
+                        </div>
+                    </div>
+
+                    <div class="text-end ms-3">
+                        <p class="mb-2 fw-bold" th:text="${#numbers.formatDecimal(item.productPrice, 0, 'COMMA', 3, 'POINT')} + 'đ'"></p>
+                        <form th:action="@{'/cart/remove/' + ${item.id}}" method="post"
+                              onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-link text-danger p-0">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi tiết đơn hàng -->
+        <div class="col-md-4">
+            <div class="border rounded p-4">
+                <h5 class="mb-4">Chi tiết đơn hàng</h5>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tổng tiền</span>
+                    <strong id="totalPrice">0đ</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Giảm giá</span>
+                    <strong id="discount" th:data-value="${cart.discount ?: 0}">0đ</strong>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-3 mt-3">
+                    <span class="fw-bold">Thành tiền</span>
+                    <strong id="finalPrice">0đ</strong>
+                </div>
+
+                <div class="text-success small mt-2">
+                    <i class="fa-solid fa-truck"></i> Đơn được miễn phí vận chuyển nhé!
+                </div>
+
+                <form th:action="@{/order/checkout}" method="post" id="checkoutForm">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="userId" th:value="${cart.userId}" />
+                    <button type="submit" class="btn btn-warning w-100 mt-4 fw-bold" id="checkoutButton" disabled>
+                        Đặt hàng <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="csrfToken" th:value="${_csrf.token}"/>
+<input type="hidden" id="currentUserId" th:value="${#authentication.principal?.id}"/>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/cart.js}"></script>
+</body>
+</html>

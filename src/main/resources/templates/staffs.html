@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>STAFF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<!-- Scroll to Top -->
+<button onclick="topFunction()" id="btn-to-top" title="Go to top">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<!-- HEADER -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container-fluid mt-5 pt-4">
+    <h2 class="text-center my-4">Danh sách nhân viên</h2>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <a th:href="@{/staff/new}" class="btn btn-success">
+        <i class="fa-regular fa-square-plus me-1"></i> Tạo mới
+    </a>
+
+    <form th:action="@{/staff/page/1}" method="get"
+          class="d-flex justify-content-center align-items-center mb-4">
+        <label class="me-2">Tìm:</label>
+        <input type="text" name="keyword" th:value="${keyword}" class="form-control w-25 me-2"
+               placeholder="Nhập tên hoặc email">
+        <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+        <button type="button" class="btn btn-secondary" onclick="clearFilter()">Xóa lọc</button>
+    </form>
+
+    <!-- Staff Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Ảnh</th>
+                <th>Họ</th>
+                <th>Tên</th>
+                <th>Quyền</th>
+                <th>Hoạt động</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="staff : ${listStaffs}">
+                <td th:text="${staff.id}"></td>
+                <td th:text="${staff.email}"></td>
+                <td>
+                    <i th:if="${staff.photoPath == null}" class="fa-solid fa-image-portrait fa-2x text-muted"></i>
+                    <img th:if="${staff.photoPath != null}" th:src="@{${staff.photoPath}}" style="width:80px">
+                </td>
+                <td th:text="${staff.firstName}"></td>
+                <td th:text="${staff.lastName}"></td>
+                <td>
+                    <span th:each="role : ${staff.roles}" class="badge bg-primary me-1" th:text="${role.name}"></span>
+                </td>
+                <td>
+                    <a th:if="${staff.enabled}" th:href="@{'/staff/' + ${staff.id} + '/enabled/false'}">
+                        <i class="fa-solid fa-check text-success"></i>
+                    </a>
+                    <a th:if="${!staff.enabled}" th:href="@{'/staff/' + ${staff.id} + '/enabled/true'}">
+                        <i class="fa-solid fa-xmark text-danger"></i>
+                    </a>
+                </td>
+                <td>
+                    <a th:href="@{'/staff/edit/' + ${staff.id}}" class="text-warning me-2">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a th:href="@{'/staff/delete/' + ${staff.id}}"
+                       th:onclick="'return confirm(\'Xác nhận xóa staff ID ' + ${staff.id} + '?\')'"
+                       class="text-danger">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Info -->
+    <div class="text-center mt-2" th:if="${totalStaff > 0}">
+        Hiển thị nhân viên [[${startStaff}]] đến [[${endStaff}]] / Tổng [[${totalStaff}]]
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-3" th:if="${totalStaff > 0}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPages == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/staff/page/1}">Đầu</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPages == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/staff/page/{p}(p=${currentPages - 1})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPages} ? 'active'">
+                <a class="page-link" th:href="@{/staff/page/{p}(p=${i})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPages == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/staff/page/{p}(p=${currentPages + 1})}">Tiếp</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPages == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/staff/page/{p}(p=${totalPages})}">Cuối</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+<script th:inline="javascript">
+    function clearFilter() {
+        window.location.href = /*[[@{/staff}]]*/ "/staff";
+    }
+</script>
+</body>
+</html>
