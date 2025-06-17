@@ -5,12 +5,27 @@
 }
 
 .mt-content {
-    margin-top: 110px;
+    margin-top: 126px;
 }
 
 .text-primary {
     color: #37176f !important;
 }
+
+.logo-img-sm {
+    height: 45px;
+    width: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.logo-img-lg {
+    height: 40px;
+    width: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
 
 .dropdown:hover .dropdown-menu {
     display: block;
@@ -80,6 +95,28 @@ a:hover:not(.btn):not(.dropdown-item) {
 
 .ctn-content {
     margin-top: 80px;
+}
+
+.product-hm {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.card .card-title {
+    font-size: 15px;
+}
+
+.card .card-text {
+    font-size: 14px;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card-footer {
+    padding: 8px 10px;
 }
 
 /* FORM ĐĂNG KÝ / ĐĂNG NHẬP */
