@@ -4,13 +4,15 @@ import com.example.ecommerce.cart.dto.CartDTO;
 import com.example.ecommerce.cart.entity.Cart;
 import com.example.ecommerce.cart.entity.CartItem;
 import com.example.ecommerce.cart.mapper.CartMapper;
+import com.example.ecommerce.cart.repo.CartItemRepository;
+import com.example.ecommerce.cart.repo.CartRepository;
 import com.example.ecommerce.product.entity.Product;
 import com.example.ecommerce.product.repository.ProductRepository;
 import com.example.ecommerce.user.entity.User;
 import com.example.ecommerce.user.repo.UserRepository;
-import com.example.ecommerce.cart.repo.CartRepository;
-import com.example.ecommerce.cart.repo.CartItemRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -22,16 +24,21 @@ public class CartService {
     private final CartItemRepository cartItemRepo;
     private final ProductRepository productRepo;
     private final UserRepository userRepo;
+    private final EntityManager entityManager;
 
     public CartService(CartRepository cartRepo, CartItemRepository cartItemRepo,
-                       ProductRepository productRepo, UserRepository userRepo) {
+                       ProductRepository productRepo, UserRepository userRepo,
+                       EntityManager entityManager) {
         this.cartRepo = cartRepo;
         this.cartItemRepo = cartItemRepo;
         this.productRepo = productRepo;
         this.userRepo = userRepo;
+        this.entityManager = entityManager;
     }
 
+    @Transactional
     public CartDTO getCartByUserId(Integer userId) {
+        // Lấy cart hoặc tạo mới nếu chưa có
         Cart cart = cartRepo.findByUserId(userId).orElseGet(() -> {
             User user = userRepo.findById(userId).orElseThrow();
             Cart newCart = new Cart();
@@ -39,15 +46,21 @@ public class CartService {
             return cartRepo.save(newCart);
         });
 
+        // Sau khi có cart, truy vấn lại từ DB để lấy bản cập nhật mới nhất
+//        cart = cartRepo.findById(cart.getId()).orElse(cart);
+        entityManager.refresh(cart);
+
+
         CartDTO dto = CartMapper.toDTO(cart);
         BigDecimal total = cart.getItems().stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         dto.setTotalPrice(total);
-        dto.setDiscount(BigDecimal.ZERO); // tuỳ chính sách
+        dto.setDiscount(BigDecimal.ZERO); // Tùy chính sách
         dto.setFinalPrice(total.subtract(dto.getDiscount()));
         return dto;
     }
+
 
     public void addToCart(Integer userId, Integer productId, int quantity) {
         Cart cart = cartRepo.findByUserId(userId).orElseGet(() -> {
@@ -76,8 +89,13 @@ public class CartService {
         }
     }
 
-    public void removeItem(Integer cartItemId) {
-        cartItemRepo.deleteById(cartItemId);
+    @Transactional
+    public void removeItem(Integer userId, Integer cartItemId) {
+        CartItem item = cartItemRepo.findById(cartItemId).orElseThrow();
+        Cart cart = item.getCart();
+
+        cart.getItems().remove(item); // Xoá khỏi Set<CartItem>
+        cartRepo.save(cart); // JPA sẽ tự xoá do orphanRemoval = true
     }
 
     public void updateQuantity(Integer itemId, int quantity) {

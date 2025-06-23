@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/fontawesome/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content">
+    <h2 class="text-center mb-4">Quản lý đơn hàng</h2>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <div th:if="${orders.isEmpty()}">
+        <p class="text-center text-muted">Không có đơn hàng nào.</p>
+    </div>
+
+    <div th:if="${!orders.isEmpty()}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Ngày đặt</th>
+                    <th>Người đặt</th>
+                    <th>Địa chỉ</th>
+                    <th>Ghi chú</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${#temporals.format(order.orderTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${order.userFullName}"></td>
+                    <td th:text="${order.shippingAddress}"></td>
+                    <td th:text="${order.note != null ? order.note : '-'}"></td>
+                    <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 3, 'POINT')} + ' đ'"></td>
+
+                    <!-- Form cập nhật trạng thái -->
+                    <td>
+                        <form th:action="@{/orders/admin/update-status}" method="post" class="d-flex flex-column align-items-center">
+                            <input type="hidden" name="orderId" th:value="${order.id}" />
+                            <select name="status" class="form-select form-select-sm w-auto mb-2" th:value="${order.status}">
+                                <option value="PENDING" th:selected="${order.status == 'PENDING'}">PENDING</option>
+                                <option value="PROCESSING" th:selected="${order.status == 'PROCESSING'}">PROCESSING</option>
+                                <option value="SHIPPED" th:selected="${order.status == 'SHIPPED'}">SHIPPED</option>
+                                <option value="COMPLETED" th:selected="${order.status == 'COMPLETED'}">COMPLETED</option>
+                                <option value="CANCELED" th:selected="${order.status == 'CANCELED'}">CANCELED</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa fa-sync"></i> Cập nhật
+                            </button>
+                        </form>
+                    </td>
+
+                    <!-- Xem chi tiết -->
+                    <td>
+                        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-outline-info btn-sm">
+                            <i class="fa fa-eye"></i> Xem
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+</body>
+</html>

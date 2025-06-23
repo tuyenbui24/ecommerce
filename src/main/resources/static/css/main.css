@@ -13,14 +13,14 @@
 }
 
 .logo-img-sm {
-    height: 45px;
+    height: 50px;
     width: auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
 
 .logo-img-lg {
-    height: 40px;
+    height: 60px;
     width: auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
@@ -93,10 +93,6 @@ a:hover:not(.btn):not(.dropdown-item) {
     color: #fcaf17;
 }
 
-.ctn-content {
-    margin-top: 80px;
-}
-
 .product-hm {
     height: 220px;
     object-fit: cover;
@@ -119,6 +115,59 @@ a:hover:not(.btn):not(.dropdown-item) {
     padding: 8px 10px;
 }
 
+.box-alert {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+/* Giỏ hàng có biểu tượng nổi bật */
+.cart-icon {
+    position: relative;
+    font-size: 1.25rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 50%;
+    background-color: #fff;
+    color: #f89034;
+    border: 1px solid #ccc;
+    transition: all 0.2s ease-in-out;
+}
+
+.cart-icon:hover {
+    background-color: #f0f0f0;
+    text-decoration: none;
+}
+
+/*.cart-badge {*/
+/*    position: absolute;*/
+/*    top: -6px;*/
+/*    right: -6px;*/
+/*    font-size: 0.7rem;*/
+/*    padding: 2px 6px;*/
+/*    border-radius: 50%;*/
+/*    background-color: #ff7b07;*/
+/*    color: #fff;*/
+/*    font-weight: bold;*/
+/*}*/
+
+.user-icon {
+    font-size: 1.5rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+    color: #f89034;
+    border: 1px solid transparent;
+    transition: background 0.3s;
+}
+
+.user-icon:hover {
+    background-color: #e9ecef;
+}
+
+.dropdown-menu-end {
+    min-width: 200px;
+}
+
 /* FORM ĐĂNG KÝ / ĐĂNG NHẬP */
 .main {
     display: none;
@@ -131,7 +180,7 @@ a:hover:not(.btn):not(.dropdown-item) {
 .form-register,
 .form-login {
     background-color: #fff;
-    margin-top: 8rem;
+    margin-top: 10rem;
     padding: 32px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);

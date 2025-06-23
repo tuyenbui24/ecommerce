@@ -1,6 +1,8 @@
 package com.example.ecommerce.staff.mapper;
 
+import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.mapper.RoleMapper;
+import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 
@@ -25,6 +27,24 @@ public class StaffMapper {
         );
 
         return dto;
+    }
+
+    public static StaffCreateRequest toRequest(Staff staff) {
+        if (staff == null) return null;
+
+        StaffCreateRequest req = new StaffCreateRequest();
+        req.setId(staff.getId());
+        req.setEmail(staff.getEmail());
+        req.setFirstName(staff.getFirstName());
+        req.setLastName(staff.getLastName());
+        req.setEnabled(staff.isEnabled());
+        req.setPhotos(staff.getPhotos());
+        req.setRoleIds(
+                staff.getRoles().stream()
+                        .map(Role::getId)
+                        .toList()
+        );
+        return req;
     }
 }
 

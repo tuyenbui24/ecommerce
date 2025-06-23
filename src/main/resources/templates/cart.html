@@ -7,12 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-<div class="container mt-5 pt-4">
-    <div class="logo">
-        <a th:href="@{/}">
-            <img class="logo-img-lg" th:src="@{/img/logo.png}" alt="Logo" />
-        </a>
-    </div>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content pt-4">
     <h2 class="text-center mb-4">Giỏ hàng</h2>
 
     <div class="row">
@@ -33,9 +31,14 @@
                     </div>
                     <div class="col-md-3 text-end">
                         <p th:text="${#numbers.formatDecimal(item.productPrice * item.quantity, 0, 'COMMA', 3, 'POINT')} + ' đ'" class="fw-bold text-danger"></p>
-                        <a th:href="@{'/cart/remove/' + ${item.id}}" class="btn btn-outline-danger btn-sm">
-                            <i class="fa fa-trash"></i> Xoá
-                        </a>
+                        <form th:action="@{/cart/remove}" method="post">
+                            <input type="hidden" name="itemId" th:value="${item.id}" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fa fa-trash"></i> Xoá
+                            </button>
+                            <div class="text-muted small">CartItem ID: [[${item.id}]]</div>
+                        </form>
+
                     </div>
                 </div>
             </div>
@@ -47,7 +50,12 @@
             <p>Giảm giá: <span th:text="${#numbers.formatDecimal(cart.discount, 0, 'COMMA', 3, 'POINT')} + ' đ'"></span></p>
             <hr>
             <h5>Thành tiền: <span class="text-success fw-bold" th:text="${#numbers.formatDecimal(cart.finalPrice, 0, 'COMMA', 3, 'POINT')} + ' đ'"></span></h5>
-            <button class="btn btn-warning w-100 mt-3">Đặt hàng</button>
+            <a th:href="@{/orders/checkout}" class="btn btn-primary">
+                <i class="fa-solid fa-credit-card"></i> Thanh toán
+            </a>
+            <a th:href="@{/orders/history}" class="mt-5 btn btn-outline-secondary w-100">
+                <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng
+            </a>
         </div>
     </div>
 </div>

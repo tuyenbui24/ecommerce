@@ -1,13 +1,19 @@
 package com.example.ecommerce.staff.controller;
 
+import com.example.ecommerce.config.FileUpload;
+import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
+import com.example.ecommerce.staff.mapper.StaffMapper;
 import com.example.ecommerce.staff.service.StaffService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -47,7 +53,7 @@ public class StaffController {
 
     @GetMapping("/new")
     public String newStaff(Model model) {
-        Staff staff = new Staff();
+        StaffCreateRequest staff = new StaffCreateRequest();
         staff.setEnabled(true);
         model.addAttribute("staff", staff);
         model.addAttribute("listRoles", staffService.findAllRoles());
@@ -56,20 +62,38 @@ public class StaffController {
     }
 
     @PostMapping("/save")
-    public String saveStaff(Staff staff, RedirectAttributes redirectAttributes) {
-        if (!staffService.isEmailUnique(staff.getId(), staff.getEmail())) {
+    public String saveStaff(@ModelAttribute("staff") StaffCreateRequest request,
+                            @RequestParam("imageFile") MultipartFile multipartFile,
+                            RedirectAttributes redirectAttributes) throws IOException {
+
+        if (!staffService.isEmailUnique(request.getId(), request.getEmail())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại! Vui lòng sử dụng email khác.");
-            return staff.getId() == null ? "redirect:/new" : "redirect:/edit/" + staff.getId();
+            return request.getId() == null ? "redirect:/staff/new" : "redirect:/staff/edit/" + request.getId();
         }
-        staffService.save(staff);
-        redirectAttributes.addFlashAttribute("message", "Staff saved successfully.");
+
+        if (!multipartFile.isEmpty()) {
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            request.setPhotos(fileName);
+        }
+
+        Staff saved = staffService.save(request);
+
+        if (!multipartFile.isEmpty()) {
+            String uploadDir = "staff-photos/" + saved.getId();
+            FileUpload.cleanDir(uploadDir);
+            FileUpload.saveFile(uploadDir, saved.getPhotos(), multipartFile);
+        }
+
+        redirectAttributes.addFlashAttribute("message", "Lưu nhân viên thành công.");
         return "redirect:/staff";
     }
 
     @GetMapping("/edit/{id}")
     public String editStaff(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         Staff staff = staffService.getId(id);
-        model.addAttribute("staff", staff);
+        StaffCreateRequest request = StaffMapper.toRequest(staff);
+
+        model.addAttribute("staff", request);
         model.addAttribute("listRoles", staffService.findAllRoles());
         model.addAttribute("pageTitle", "Edit Staff (ID: " + id + ")");
         return "staff_form";

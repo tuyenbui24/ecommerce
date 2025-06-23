@@ -1,4 +1,4 @@
-<div th:fragment="header">
+<div th:fragment="header" xmlns:sec="http://www.w3.org/1999/xhtml">
   <div class="header fixed-top d-none d-lg-block" style="background-color: #feefd0;">
     <div class="container header-container">
       <div class="row align-items-center py-2">
@@ -12,8 +12,9 @@
           </div>
           <!-- Search -->
           <div class="ms-3">
-            <form th:action="@{/search}" method="get" class="d-flex">
-              <input class="form-control rounded-start" type="text" name="q" placeholder="Tìm kiếm" />
+            <form th:action="@{/?page=1}" method="get" class="d-flex">
+              <input class="form-control rounded-start" type="text"
+                     name="keyword" th:value="${keyword}" placeholder="Tìm kiếm" />
               <button type="submit" class="btn btn-warning rounded-end text-white">
                 <i class="fa-solid fa-magnifying-glass"></i>
               </button>
@@ -47,23 +48,28 @@
 
         <!-- Cart & Login -->
         <div class="col-lg-4 text-center">
+          <!-- Giỏ hàng -->
+          <div class="d-inline-block me-4 position-relative dropdown" sec:authorize="hasRole('USER')">
+            <a th:href="@{/cart}" class="cart-icon position-relative">
+              <i class="fa-solid fa-bag-shopping"></i>
+<!--              <span class="cart-badge" th:text="${cartItemCount ?: 0}"></span>-->
+            </a>
+          </div>
+
+          <!-- User login/logout -->
           <div class="d-inline-block">
-            <!-- Chưa đăng nhập -->
             <div th:unless="${#authorization.expression('isAuthenticated()')}">
-              <a class="text-decoration-none fw-bold text-primary mx-1 register" th:href="@{/register}">ĐĂNG KÝ</a>
+              <a class="text-decoration-none fw-bold text-primary mx-1" th:href="@{/register}">ĐĂNG KÝ</a>
               <span>/</span>
-              <a class="text-decoration-none fw-bold text-primary mx-1 login" th:href="@{/login}">ĐĂNG NHẬP</a>
+              <a class="text-decoration-none fw-bold text-primary mx-1" th:href="@{/login}">ĐĂNG NHẬP</a>
             </div>
 
-            <!-- Đã đăng nhập -->
             <div th:if="${#authorization.expression('isAuthenticated()')}" class="dropdown d-inline-block">
-              <a href="#" class="text-decoration-none text-primary fw-bold dropdown-toggle" id="userDropdown"
-                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-circle-user fs-4"></i>
+              <a href="#" class="user-icon dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-circle-user"></i>
               </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" th:href="@{/account}">Thông tin tài khoản</a></li>
-                <li><a class="dropdown-item" th:href="@{/change-password}">Đổi mật khẩu</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <form th:action="@{/logout}" method="post">
@@ -72,15 +78,6 @@
                 </li>
               </ul>
             </div>
-          </div>
-
-          <!-- Giỏ hàng -->
-          <div class="d-inline-block me-4 position-relative dropdown">
-            <a th:href="@{/cart}" class="text-decoration-none text-primary fw-bold">
-              <i class="fa-solid fa-bag-shopping fs-5"></i>
-              <span class="position-absolute top-0 start-75 translate-middle badge rounded-pill bg-warning text-primary"
-                    th:text="${cartItemCount ?: 0}"></span>
-            </a>
           </div>
         </div>
       </div>

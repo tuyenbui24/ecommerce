@@ -3,6 +3,7 @@ package com.example.ecommerce.staff.service;
 import com.example.ecommerce.config.exception.UserNotFoundExp;
 import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.repository.RoleRepository;
+import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 import com.example.ecommerce.staff.mapper.StaffMapper;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class StaffService {
@@ -43,27 +45,30 @@ public class StaffService {
         return roleRepo.findAll();
     }
 
-    public void encryptPassword(Staff staff) {
-        staff.setPassword(encoder.encode(staff.getPassword()));
-    }
-
-    public Staff save(Staff staff) {
-        boolean staffUpdate = staff.getId() != null;
+    public Staff save(StaffCreateRequest request) {
+        boolean staffUpdate = request.getId() != null;
+        Staff staff;
 
         if (staffUpdate) {
-            Staff existing = staffRepo.findById(staff.getId()).orElse(null);
-            if (existing != null) {
-                if (staff.getPassword().isBlank()) {
-                    staff.setPassword(existing.getPassword());
-                } else {
-                    encryptPassword(staff);
-                }
-            } else {
-                throw new IllegalArgumentException("Staff not found with ID: " + staff.getId());
-            }
+            staff = staffRepo.findById(request.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + request.getId()));
         } else {
-            encryptPassword(staff);
+            staff = new Staff();
         }
+
+        staff.setEmail(request.getEmail());
+        staff.setFirstName(request.getFirstName());
+        staff.setLastName(request.getLastName());
+        staff.setEnabled(request.isEnabled());
+        staff.setPhotos(request.getPhotos());
+
+        if (!staffUpdate || (request.getPassword() != null && !request.getPassword().isBlank())) {
+            staff.setPassword(encoder.encode(request.getPassword()));
+        }
+
+        List<Role> roles = roleRepo.findAllById(request.getRoleIds());
+        staff.setRoles(Set.copyOf(roles));
+
         return staffRepo.save(staff);
     }
 

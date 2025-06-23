@@ -6,11 +6,6 @@ import com.example.ecommerce.config.exception.ProductNotFoundExp;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
 import com.example.ecommerce.product.dto.ProductDTO;
 import com.example.ecommerce.product.service.ProductService;
-
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,10 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
@@ -151,27 +142,5 @@ public class ProductController {
         String statusStr = status ? "mở" : "tắt";
         ra.addFlashAttribute("message", "Đã " + statusStr + " sản phẩm ID " + id);
         return "redirect:/products";
-    }
-
-    @GetMapping("/product-image/{productId}/{imageName}")
-    public ResponseEntity<Resource> serveImage(@PathVariable Integer productId,
-                                               @PathVariable String imageName) throws IOException {
-        String uploadDir = "product-image/" + productId;
-        Path imagePath = Paths.get(uploadDir).resolve(imageName).normalize();
-        System.out.println("Checking image path: " + imagePath); // Debug
-        try {
-            Resource resource = new UrlResource(imagePath.toUri());
-            if (resource.exists() && resource.isReadable()) {
-                String contentType = Files.probeContentType(imagePath);
-                return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(contentType != null ? contentType : "image/jpeg"))
-                        .body(resource);
-            } else {
-                System.out.println("Image not found or not readable: " + imagePath);
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.notFound().build();
     }
 }

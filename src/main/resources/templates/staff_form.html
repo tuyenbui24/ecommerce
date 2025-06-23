@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Form nhân viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/fontawesome/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content">
+    <h2 class="text-center mb-4" th:text="${pageTitle}">Form nhân viên</h2>
+
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/staff/save}" th:object="${staff}" method="post" enctype="multipart/form-data"
+          class="col-md-8 offset-md-2 border rounded p-4 shadow-sm bg-light">
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <!-- Họ -->
+        <div class="mb-3">
+            <label class="form-label">Họ:</label>
+            <input type="text" th:field="*{lastName}" class="form-control" required/>
+        </div>
+
+        <!-- Tên -->
+        <div class="mb-3">
+            <label class="form-label">Tên:</label>
+            <input type="text" th:field="*{firstName}" class="form-control" required/>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label class="form-label">Email:</label>
+            <input type="email" th:field="*{email}" class="form-control" required/>
+        </div>
+
+        <!-- Mật khẩu -->
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu:</label>
+            <input type="password" th:field="*{password}" class="form-control"
+                   th:placeholder="${staff.id != null} ? 'Để trống nếu không thay đổi' : ''"/>
+        </div>
+
+        <!-- Ảnh đại diện -->
+        <div class="mb-3">
+            <label class="form-label">Ảnh đại diện:</label>
+            <input type="file" name="imageFile" class="form-control"/>
+            <div class="mt-2" th:if="*{photos}">
+                <img th:src="@{'/staff-photos/' + ${staff.id} + '/' + ${staff.photos}}"
+                     style="max-height: 120px;" alt="Ảnh nhân viên"/>
+            </div>
+        </div>
+
+        <!-- Vai trò -->
+        <div class="mb-3">
+            <label class="form-label">Vai trò:</label>
+            <div class="row">
+                <div class="col-6" th:each="role : ${listRoles}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               th:field="*{roleIds}"
+                               th:value="${role.id}"
+                               th:id="'role_' + ${role.id}"/>
+                        <label class="form-check-label" th:for="'role_' + ${role.id}" th:text="${role.name}"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" th:field="*{enabled}" id="enabled">
+            <label class="form-check-label" for="enabled">Kích hoạt tài khoản</label>
+        </div>
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu nhân viên
+            </button>
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+</body>
+</html>

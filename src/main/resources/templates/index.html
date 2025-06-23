@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,20 +15,45 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container mt-content pt-5">
+
+    <!-- Thông báo thêm giỏ hàng -->
+    <div th:if="${addedProductName}" class="position-fixed bottom-0 end-0 m-4 z-3">
+        <div id="cart-toast" class="toast show align-items-center text-bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <strong th:text="${addedProductName}"></strong> đã được thêm vào giỏ hàng!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tiêu đề -->
     <h2 class="text-center mb-4">Sản phẩm nổi bật</h2>
 
+    <!-- Thông báo flash -->
     <div th:if="${message}" class="alert alert-success text-center">
         [[${message}]]
     </div>
 
+    <!-- Thông báo tìm kiếm -->
+    <div th:if="${keyword}" class="mb-3">
+        <h5 class="text-muted">Kết quả tìm kiếm cho: "<span th:text="${keyword}"></span>"</h5>
+    </div>
+
+    <!-- Nếu không có sản phẩm -->
+    <div th:if="${products.isEmpty()}" class="alert alert-warning text-center">
+        Không tìm thấy sản phẩm nào phù hợp.
+    </div>
+
     <!-- Danh sách sản phẩm -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"
+         th:if="${!products.isEmpty()}">
         <div class="col" th:each="product : ${products}">
             <div class="card h-100 shadow-sm">
                 <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
                     <img th:if="${product.image != null}"
                          th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
-                         class="product-hm" alt="Ảnh sản phẩm">
+                         class="product-hm card-img-top" alt="Ảnh sản phẩm">
 
                     <div th:if="${product.image == null}" class="text-center my-5">
                         <i class="fa-solid fa-box fa-3x text-muted"></i>
@@ -53,9 +78,29 @@
             </div>
         </div>
     </div>
+
+    <!-- PHÂN TRANG -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/(q=${keyword}, page=${currentPage})}">Trước</a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/(q=${keyword}, page=${i + 1})}"
+                   th:text="${i + 1}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/(q=${keyword}, page=${currentPage + 2})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
 
-<!-- Scripts -->
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/fontawesome/js/all.min.js}"></script>
 <script th:src="@{/js/main.js}"></script>

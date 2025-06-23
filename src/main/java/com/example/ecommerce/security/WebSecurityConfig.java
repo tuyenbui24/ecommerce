@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                                 "/img/**", "/bootstrap/**", "/fontawesome/**").permitAll()
                         .requestMatchers("/staffs/**", "/users/**", "/products/**").hasRole("ADMIN")
                         .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
-                        .requestMatchers("/api/cart/**").authenticated() // Thêm dòng này cho API endpoints
+//                        .requestMatchers("/api/cart/**").authenticated()
                         .anyRequest().authenticated())
 
                 .formLogin(login -> login
@@ -58,11 +58,11 @@ public class WebSecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"))
-
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); // Sử dụng cookie CSRF
+                        .deleteCookies("JSESSIONID"));
+//
+//                .csrf(csrf -> csrf
+//                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); // Sử dụng cookie CSRF
 
         return http.build();
     }

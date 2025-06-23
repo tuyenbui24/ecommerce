@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content">
+    <h3 class="mb-4">Chi tiết đơn hàng #<span th:text="${order.id}"></span></h3>
+
+    <p><strong>Ngày đặt:</strong> <span th:text="${#temporals.format(order.orderTime, 'dd/MM/yyyy HH:mm')}"></span></p>
+    <p><strong>Trạng thái:</strong> <span th:text="${order.status}"></span></p>
+    <p><strong>Địa chỉ nhận hàng:</strong> <span th:text="${order.shippingAddress}"></span></p>
+    <p th:if="${order.note}"><strong>Ghi chú:</strong> <span th:text="${order.note}"></span></p>
+
+    <table class="table table-bordered mt-4">
+        <thead class="table-light">
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${order.items}">
+            <td class="text-center">
+                <img th:src="@{'/product-image/' + ${item.productId} + '/' + ${item.image}}"
+                     class="img-fluid rounded" style="max-height: 120px;">
+            </td>
+            <td th:text="${item.productName}"></td>
+            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 3, 'POINT')} + ' đ'"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 3, 'POINT')} + ' đ'"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h5 class="text-end mt-4">Tổng tiền:
+        <span class="text-danger fw-bold"
+              th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 3, 'POINT')} + ' đ'">
+        </span>
+    </h5>
+
+    <a sec:authorize="hasAnyRole('ADMIN', 'USER')"
+       th:href="@{/orders/history}" class="btn btn-outline-primary mt-3">← Quay lại lịch sử đơn hàng
+    </a>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

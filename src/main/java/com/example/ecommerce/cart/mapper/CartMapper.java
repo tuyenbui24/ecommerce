@@ -15,7 +15,6 @@ public class CartMapper {
 
     public static CartDTO toDTO(Cart cart) {
         if (cart == null) return null;
-
         CartDTO dto = new CartDTO();
         dto.setId(cart.getId());
         dto.setUserId(cart.getUser().getId());

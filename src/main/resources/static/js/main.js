@@ -72,6 +72,27 @@ document.addEventListener("DOMContentLoaded", function () {
         icon.classList.toggle('fa-eye-slash', !showing);
     });
 
+    const toastEl = document.getElementById("cart-toast");
+    if (toastEl) {
+        setTimeout(() => {
+            toastEl.classList.remove("show");
+            toastEl.classList.add("hide");
+        }, 3000);
+    }
+
+    const form = document.querySelector("form");
+    const newPassword = document.querySelector("#newPassword");
+    const confirmPassword = document.querySelector("#confirmPassword");
+
+    form.addEventListener("submit", (e) => {
+        if (newPassword.value !== "" || confirmPassword.value !== "") {
+            if (newPassword.value !== confirmPassword.value) {
+                e.preventDefault();
+                alert("Mật khẩu mới và nhập lại không khớp.");
+            }
+        }
+    });
+
     // Kích hoạt dropdown hover ngay từ đầu
     addDropdownHoverEffect();
     window.addEventListener("resize", addDropdownHoverEffect);

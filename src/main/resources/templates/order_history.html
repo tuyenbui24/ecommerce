@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử đơn hàng</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content">
+    <h2 class="text-center mb-4">Lịch sử đơn hàng</h2>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <div th:if="${orders.isEmpty()}">
+        <p class="text-center text-muted">Bạn chưa có đơn hàng nào.</p>
+    </div>
+
+    <div th:if="${!orders.isEmpty()}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Ngày đặt</th>
+                    <th>Trạng thái</th>
+                    <th>Địa chỉ giao hàng</th>
+                    <th>Ghi chú</th> <!-- Mới -->
+                    <th>Tổng tiền</th>
+                    <th>Hành động</th> <!-- Mới -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${#temporals.format(order.orderTime, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${order.shippingAddress}"></td>
+                    <td th:text="${order.note != null ? order.note : '---'}"></td> <!-- Hiển thị ghi chú -->
+                    <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 3, 'POINT')} + ' đ'"></td>
+                    <td>
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-eye"></i> Chi tiết
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+</body>
+</html>

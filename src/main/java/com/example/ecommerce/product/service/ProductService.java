@@ -80,7 +80,6 @@ public class ProductService {
         return ProductMapper.toDTO(saved);
     }
 
-    // ✅ Trả về DTO theo ID
     public ProductDTO getDtoById(Integer id) throws ProductNotFoundExp {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundExp("Không tìm thấy sản phẩm với ID: " + id));

@@ -9,11 +9,13 @@ import com.example.ecommerce.user.entity.User;
 import com.example.ecommerce.user.mapper.UserMapper;
 import com.example.ecommerce.user.repo.UserRepository;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -58,4 +60,40 @@ public class UserService {
         User user = userRepo.getUserByEmail(email);
         return user == null || user.getId().equals(id);
     }
+
+    public UserDTO findDtoById(Integer id) {
+        return userRepo.findById(id)
+                .map(UserMapper::toDTO)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
+    }
+
+    public User getById(Integer id) {
+        return userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public boolean checkPassword(User user, String rawPassword) {
+        return encoder.matches(rawPassword, user.getPassword());
+    }
+
+    public void updateUserInfo(UserDTO dto, String newPassword) {
+        User user = userRepo.findById(dto.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
+
+        if (!user.getEmail().equals(dto.getEmail())) {
+            if (userRepo.existsByEmail(dto.getEmail())) {
+                throw new IllegalArgumentException("Email đã được sử dụng");
+            }
+            user.setEmail(dto.getEmail());
+        }
+
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            user.setPassword(encoder.encode(newPassword));
+        }
+
+        userRepo.save(user);
+    }
+
 }
