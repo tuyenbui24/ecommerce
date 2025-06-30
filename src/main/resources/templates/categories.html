@@ -64,30 +64,35 @@
         </table>
     </div>
 
-    <!-- Thông tin phân trang -->
     <div class="text-center mt-2" th:if="${totalItems > 0}">
         Hiển thị danh mục [[${start}]] đến [[${end}]] / Tổng [[${totalItems}]]
     </div>
 
-    <!-- Phân trang -->
     <div class="d-flex justify-content-center mt-3" th:if="${totalItems > 0}">
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link" th:href="@{/categories/page/1(keyword=${keyword})}">Đầu</a>
             </li>
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/categories/page/{p}(p=${currentPage - 1}, keyword=${keyword})}">Trước</a>
+                <a class="page-link"
+                   th:href="@{/categories/page/{p}(p=${currentPage - 1}, keyword=${keyword})}">Trước</a>
             </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(
+                T(java.lang.Math).max(1, currentPage - 1),
+                T(java.lang.Math).min(totalPages, currentPage + 1))}"
                 th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link" th:href="@{/categories/page/{p}(p=${i}, keyword=${keyword})}"
+                <a class="page-link"
+                   th:href="@{/categories/page/{p}(p=${i}, keyword=${keyword})}"
                    th:text="${i}"></a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/categories/page/{p}(p=${currentPage + 1}, keyword=${keyword})}">Tiếp</a>
+                <a class="page-link"
+                   th:href="@{/categories/page/{p}(p=${currentPage + 1}, keyword=${keyword})}">Tiếp</a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/categories/page/{p}(p=${totalPages}, keyword=${keyword})}">Cuối</a>
+                <a class="page-link"
+                   th:href="@{/categories/page/{p}(p=${totalPages}, keyword=${keyword})}">Cuối</a>
             </li>
         </ul>
     </div>

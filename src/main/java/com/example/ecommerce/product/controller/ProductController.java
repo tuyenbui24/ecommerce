@@ -1,6 +1,7 @@
 package com.example.ecommerce.product.controller;
 
 import com.example.ecommerce.category.entity.Category;
+import com.example.ecommerce.category.service.CategoryService;
 import com.example.ecommerce.config.FileUpload;
 import com.example.ecommerce.config.exception.ProductNotFoundExp;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
@@ -21,9 +22,11 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final CategoryService categoryService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -31,7 +34,6 @@ public class ProductController {
         return page(1, "", model);
     }
 
-    // Phân trang + tìm kiếm
     @GetMapping("/page/{pageNum}")
     public String page(@PathVariable int pageNum,
                        @RequestParam(name = "keyword", defaultValue = "") String keyword,
@@ -46,7 +48,6 @@ public class ProductController {
         return "products";
     }
 
-    // Hiển thị form tạo mới
     @GetMapping("/new")
     public String newProductForm(Model model) {
         ProductCreateRequest request = new ProductCreateRequest();
@@ -58,13 +59,11 @@ public class ProductController {
         return "product_form";
     }
 
-    // Lưu sản phẩm mới hoặc cập nhật
     @PostMapping("/save")
     public String saveProduct(@ModelAttribute("product") ProductCreateRequest request,
                               @RequestParam("imageFile") MultipartFile imageFile,
                               RedirectAttributes ra) throws IOException {
 
-        // ✅ Kiểm tra tên sản phẩm trùng (trừ khi đang sửa chính nó)
         if (!productService.isProductNameUnique(request.getId(), request.getName())) {
             ra.addFlashAttribute("errorMessage", "Tên sản phẩm đã tồn tại.");
             if (request.getId() != null) {
@@ -73,16 +72,13 @@ public class ProductController {
             return "redirect:/products/new";
         }
 
-        // ✅ Nếu có ảnh mới → gán tên ảnh
         if (!imageFile.isEmpty()) {
             String fileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
             request.setImage(fileName);
         }
 
-        // ✅ Lưu sản phẩm
         ProductDTO saved = productService.save(request);
 
-        // ✅ Lưu ảnh vào thư mục (nếu có)
         if (!imageFile.isEmpty()) {
             String uploadDir = "product-image/" + saved.getId();
             FileUpload.cleanDir(uploadDir);
@@ -93,7 +89,6 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    // Form sửa sản phẩm
     @GetMapping("/edit/{id}")
     public String editProductForm(@PathVariable("id") Integer id,
                                   Model model,
@@ -107,6 +102,7 @@ public class ProductController {
             request.setName(product.getName());
             request.setPrice(product.getPrice());
             request.setQuantity(product.getQuantity());
+            request.setDescription(product.getDescription());
             request.setImage(product.getImage());
             request.setCategoryId(product.getCategoryId());
 
@@ -121,7 +117,6 @@ public class ProductController {
         }
     }
 
-    // Xoá sản phẩm
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Integer id, RedirectAttributes ra) {
         try {
@@ -133,7 +128,6 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    // Bật/tắt trạng thái hoạt động
     @GetMapping("/{id}/enabled/{status}")
     public String updateEnabledStatus(@PathVariable("id") Integer id,
                                       @PathVariable("status") boolean status,

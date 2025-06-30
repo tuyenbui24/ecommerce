@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category findByName(String name);
 
+    Category findBySlug(String slug);
+
     @Query("select c from Category c where c.name like %?1%")
     Page<Category> searchC(String keyword, Pageable pageable);
 }

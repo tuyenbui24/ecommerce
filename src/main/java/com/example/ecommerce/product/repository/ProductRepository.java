@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
@@ -23,4 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("select p from Product p where concat(p.id, ' ', p.name, ' ', p.price, ' ', p.quantity) like %?1%")
     Page<Product> searchP(String keyword, Pageable pageable);
+
+    List<Product> findByCategory_Id(Integer categoryId, Pageable pageable);
+    Page<Product> findByCategory_Name(String name, Pageable pageable);
 }

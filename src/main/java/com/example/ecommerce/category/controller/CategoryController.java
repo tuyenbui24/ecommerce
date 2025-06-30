@@ -54,9 +54,28 @@ public class CategoryController {
     @PostMapping("/save")
     public String saveCategory(@ModelAttribute("category") Category category,
                                RedirectAttributes ra) {
+        boolean isUnique = categoryService.isNameUnique(category.getId(), category.getName());
+        if (!isUnique) {
+            ra.addFlashAttribute("errorMessage", "Tên danh mục đã tồn tại!");
+            return "redirect:/categories/edit/" + category.getId();
+        }
+
         categoryService.save(category);
-        ra.addFlashAttribute("message", "Đã thêm danh mục thành công!");
+        ra.addFlashAttribute("message", "Đã lưu danh mục thành công!");
         return "redirect:/categories";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editCategoryForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
+        try {
+            Category category = categoryService.getById(id);
+            model.addAttribute("category", category);
+            model.addAttribute("pageTitle", "Chỉnh sửa danh mục");
+            return "category_form";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/categories/edit/";
+        }
     }
 
     @GetMapping("/delete/{id}")

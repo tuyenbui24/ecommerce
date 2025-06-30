@@ -31,6 +31,9 @@ public class Product {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column(length = 5000)
+    private String description;
+
     @Column(nullable = false)
     private String image;
 
@@ -50,10 +53,10 @@ public class Product {
         this.enabled = true;
     }
 
-    @Transient
-    public String getProductImagePath() {
-        if (id == null || image == null) return "/images/default-product.png";
-        return "/product-image/" + this.id + "/" + this.image;
-    }
+//    @Transient
+//    public String getProductImagePath() {
+//        if (id == null || image == null) return "/images/default-product.png";
+//        return "/product-image/" + this.id + "/" + this.image;
+//    }
 }
 

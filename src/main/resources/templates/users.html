@@ -61,28 +61,33 @@
         / Tổng [[${totalItemsU}]]
     </div>
 
-    <!-- Phân trang -->
-    <div class="mt-3 d-flex justify-content-center">
+    <div class="mt-3 d-flex justify-content-center" th:if="${totalPagesU > 1}">
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPageU == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/admin/users/page/1(keyword=${keywordU})}">Đầu</a>
+                <a class="page-link" th:href="@{/user/page/1(keyword=${keywordU})}">Đầu</a>
             </li>
             <li class="page-item" th:classappend="${currentPageU == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/admin/users/page/{p}(p=${currentPageU - 1}, keyword=${keywordU})}">Trước</a>
+                   th:href="@{/user/page/{p}(p=${currentPageU - 1}, keyword=${keywordU})}">Trước</a>
             </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPagesU)}"
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(
+                T(java.lang.Math).max(1, currentPageU - 1),
+                T(java.lang.Math).min(totalPagesU, currentPageU + 1))}"
                 th:classappend="${i == currentPageU} ? 'active'">
-                <a class="page-link" th:href="@{/admin/users/page/{p}(p=${i}, keyword=${keywordU})}"
+                <a class="page-link"
+                   th:href="@{/user/page/{p}(p=${i}, keyword=${keywordU})}"
                    th:text="${i}"></a>
             </li>
+
             <li class="page-item" th:classappend="${currentPageU == totalPagesU} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/admin/users/page/{p}(p=${currentPageU + 1}, keyword=${keywordU})}">Tiếp</a>
+                   th:href="@{/user/page/{p}(p=${currentPageU + 1}, keyword=${keywordU})}">Tiếp</a>
             </li>
             <li class="page-item" th:classappend="${currentPageU == totalPagesU} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/admin/users/page/{p}(p=${totalPagesU}, keyword=${keywordU})}">Cuối</a>
+                   th:href="@{/user/page/{p}(p=${totalPagesU}, keyword=${keywordU})}">Cuối</a>
             </li>
         </ul>
     </div>

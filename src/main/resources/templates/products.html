@@ -50,6 +50,7 @@
                 <th>ID</th>
                 <th>Tên</th>
                 <th>Ảnh</th>
+                <th>Mô tả</th>
                 <th>Giá</th>
                 <th>Số lượng</th>
                 <th>Danh mục</th>
@@ -65,6 +66,9 @@
                     <i th:if="${product.image == null}" class="fa-solid fa-box fa-2x text-muted"></i>
                     <img th:if="${product.image != null}" th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
                          style="width:80px">
+                </td>
+                <td th:attr="title=${product.description}" class="description">
+                    <span th:text="${product.description}"></span>
                 </td>
                 <td th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
                 <td th:text="${product.quantity}"></td>
@@ -92,30 +96,35 @@
         </table>
     </div>
 
-    <!-- Pagination Info -->
     <div class="text-center mt-2" th:if="${totalItems > 0}">
-        Hiển thị sản phẩm [[${#numbers.sequence((currentPage - 1) * 5 + 1, (currentPage - 1) * 5 + listProduct.size())}]] /
-        Tổng [[${totalItems}]]
+        Hiển thị sản phẩm [[${#numbers.formatInteger(((currentPage - 1) * 5 + 1), 0)}]]
+        đến [[${#numbers.formatInteger(((currentPage - 1) * 5 + listProduct.size()), 0)}]]
+        / Tổng [[${totalItems}]]
     </div>
 
-    <!-- Pagination -->
     <div class="d-flex justify-content-center mt-3" th:if="${totalItems > 0}">
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link" th:href="@{/products/page/1}">Đầu</a>
             </li>
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/products/page/{p}(p=${currentPage - 1})}">Trước</a>
+                <a class="page-link"
+                   th:href="@{/products/page/{p}(p=${currentPage - 1})}">Trước</a>
             </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(
+                T(java.lang.Math).max(1, currentPage - 1),
+                T(java.lang.Math).min(totalPages, currentPage + 1))}"
                 th:classappend="${i == currentPage} ? 'active'">
                 <a class="page-link" th:href="@{/products/page/{p}(p=${i})}" th:text="${i}"></a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/products/page/{p}(p=${currentPage + 1})}">Tiếp</a>
+                <a class="page-link"
+                   th:href="@{/products/page/{p}(p=${currentPage + 1})}">Tiếp</a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/products/page/{p}(p=${totalPages})}">Cuối</a>
+                <a class="page-link"
+                   th:href="@{/products/page/{p}(p=${totalPages})}">Cuối</a>
             </li>
         </ul>
     </div>

@@ -43,6 +43,12 @@
             <input type="number" th:field="*{quantity}" class="form-control" required/>
         </div>
 
+        <!-- Mô tả sản phẩm -->
+        <div class="mb-3">
+            <label class="form-label">Mô tả:</label>
+            <textarea th:field="*{description}" class="form-control" rows="5" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
+        </div>
+
         <!-- Danh mục -->
         <div class="mb-3">
             <label class="form-label">Danh mục:</label>

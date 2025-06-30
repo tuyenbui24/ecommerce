@@ -8,6 +8,10 @@
     margin-top: 126px;
 }
 
+.pt-content {
+    padding: 0 160px;
+}
+
 .text-primary {
     color: #37176f !important;
 }
@@ -26,6 +30,27 @@
     border-radius: 4px;
 }
 
+.description {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card {
+    min-width: 180px;
+}
+
+.card-title {
+    font-size: 14px;
+    height: 38px;
+    overflow: hidden;
+}
+
+.card-img-top {
+    height: 196px;
+    object-fit: cover;
+}
 
 .dropdown:hover .dropdown-menu {
     display: block;

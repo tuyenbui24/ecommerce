@@ -12,7 +12,9 @@ import com.example.ecommerce.product.repository.ProductRepository;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -20,7 +22,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public static final int PRODUCT_PER_PAGE = 4;
+    public static final int PRODUCT_PER_PAGE = 5;
 
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
@@ -69,6 +71,7 @@ public class ProductService {
             product.setName(request.getName());
             product.setPrice(request.getPrice());
             product.setQuantity(request.getQuantity());
+            product.setDescription(request.getDescription());
             product.setCategory(category);
 
             if (request.getImage() != null && !request.getImage().isEmpty()) {
@@ -103,5 +106,30 @@ public class ProductService {
     public boolean isProductNameUnique(Integer id, String name) {
         Product existingProduct = productRepository.getProductByName(name);
         return existingProduct == null || existingProduct.getId().equals(id);
+    }
+
+    public Map<String, List<ProductDTO>> getProductsByCategory(int num) {
+        List<Category> categories = categoryRepository.findAll(Sort.by("name"));
+        Map<String, List<ProductDTO>> categoryMap = new HashMap<>();
+
+        for (Category category : categories) {
+            Pageable page = PageRequest.of(0, num, Sort.by("name"));
+            List<Product> productList = productRepository.findByCategory_Id(category.getId(), page);
+            List<ProductDTO> dtoList = productList.stream().map(ProductMapper::toDTO).toList();
+            categoryMap.put(category.getName(), dtoList);
+        }
+
+        return categoryMap;
+    }
+
+    public Page<ProductDTO> listByCategory(String categoryName, int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum - 1, 8);
+
+        Page<Product> productPage = productRepository.findByCategory_Name(categoryName, pageable);
+        List<ProductDTO> dtoList = productPage.stream()
+                .map(ProductMapper::toDTO)
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, productPage.getTotalElements());
     }
 }

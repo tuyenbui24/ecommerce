@@ -3,6 +3,7 @@ package com.example.ecommerce.order.controller;
 import com.example.ecommerce.order.dto.OrderDTO;
 import com.example.ecommerce.order.service.OrderService;
 import com.example.ecommerce.security.SecurityUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +57,15 @@ public class OrderController {
     }
 
     @GetMapping("/admin")
-    public String listAllOrders(Model model) {
-        List<OrderDTO> orders = orderService.getAllOrders();
-        model.addAttribute("orders", orders);
+    public String listOrdersPaged(@RequestParam(defaultValue = "1") int page,
+                                  Model model) {
+        Page<OrderDTO> orderPage = orderService.findAllOrdersPaged(page);
+
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orderPage.getTotalPages());
+        model.addAttribute("totalItems", orderPage.getTotalElements());
+
         return "admin_order_list";
     }
 

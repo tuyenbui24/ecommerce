@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -45,7 +44,6 @@ public class WebSecurityConfig {
                                 "/img/**", "/bootstrap/**", "/fontawesome/**").permitAll()
                         .requestMatchers("/staffs/**", "/users/**", "/products/**").hasRole("ADMIN")
                         .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
-//                        .requestMatchers("/api/cart/**").authenticated()
                         .anyRequest().authenticated())
 
                 .formLogin(login -> login
@@ -59,11 +57,6 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"));
-//
-//                .csrf(csrf -> csrf
-//                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API endpoints
-//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); // Sử dụng cookie CSRF
-
         return http.build();
     }
 }

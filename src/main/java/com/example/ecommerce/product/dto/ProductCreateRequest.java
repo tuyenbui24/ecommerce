@@ -10,6 +10,7 @@ public class ProductCreateRequest {
     private String name;
     private BigDecimal price;
     private Integer quantity;
+    private String description;
     private String image;
     private Integer categoryId;
 }

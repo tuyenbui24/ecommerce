@@ -72,6 +72,40 @@
                 </tr>
                 </tbody>
             </table>
+
+            <div class="text-center" th:if="${totalItems > 0}">
+                Hiển thị đơn hàng [[${#numbers.formatInteger(((currentPage - 1) * 10 + 1), 0)}]]
+                đến [[${#numbers.formatInteger(((currentPage - 1) * 10 + orders.size()), 0)}]]
+                / Tổng [[${totalItems}]]
+            </div>
+
+            <div class="d-flex justify-content-center mt-3" th:if="${totalItems > 0}">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/orders/admin(page=1)}">Đầu</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/orders/admin(page=${currentPage - 1})}">Trước</a>
+                    </li>
+
+                    <!-- Chỉ hiện các trang quanh currentPage -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(
+                T(java.lang.Math).max(1, currentPage - 1),
+                T(java.lang.Math).min(totalPages, currentPage + 1))}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/orders/admin(page=${i})}" th:text="${i}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/orders/admin(page=${currentPage + 1})}">Tiếp</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/orders/admin(page=${totalPages})}">Cuối</a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 </div>

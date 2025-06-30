@@ -2,6 +2,7 @@ package com.example.ecommerce.category.service;
 
 import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.category.repository.CategoryRepository;
+import com.example.ecommerce.config.SlugUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Service
 public class CategoryService {
 
-    public static final int CATEGORY_PER_PAGE = 5;
+    public static final int CATEGORY_PER_PAGE = 10;
 
     private final CategoryRepository categoryRepo;
 
@@ -36,12 +37,23 @@ public class CategoryService {
     }
 
     public void save(Category category) {
+        if (category.getSlug() == null || category.getSlug().isBlank()) {
+            category.setSlug(SlugUtil.toSlug(category.getName()));
+        }
         categoryRepo.save(category);
     }
 
     public Category getById(Integer id) {
         Optional<Category> result = categoryRepo.findById(id);
         return result.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục có ID: " + id));
+    }
+
+    public Category getBySlug(String slug) {
+        Category category = categoryRepo.findBySlug(slug);
+        if (category == null) {
+            throw new IllegalArgumentException("Không tìm thấy danh mục với slug: " + slug);
+        }
+        return category;
     }
 
     public void delete(Integer id) {
@@ -58,4 +70,3 @@ public class CategoryService {
         return existing.getId().equals(id);
     }
 }
-

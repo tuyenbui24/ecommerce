@@ -10,6 +10,7 @@ import com.example.ecommerce.order.mapper.OrderMapper;
 import com.example.ecommerce.order.repo.OrderRepository;
 import com.example.ecommerce.product.repository.ProductRepository;
 import com.example.ecommerce.user.repo.UserRepository;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,8 @@ public class OrderService {
         this.productRepo = productRepo;
         this.userRepo = userRepo;
     }
+
+    public static final int ITEM_IN_PAGE = 5;
 
     @Transactional
     public OrderDTO createOrder(Integer userId, String shippingAddress, String note) {
@@ -94,6 +97,17 @@ public class OrderService {
         OrderStatus status = OrderStatus.valueOf(statusStr);
         order.setStatus(status);
         orderRepo.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> findAllOrdersPaged(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum - 1, ITEM_IN_PAGE, Sort.by("orderTime").descending());
+        Page<Order> orderPage = orderRepo.findAll(pageable);
+
+        List<OrderDTO> dtos = orderPage.getContent()
+                .stream().map(OrderMapper::toDTO).toList();
+
+        return new PageImpl<>(dtos, pageable, orderPage.getTotalElements());
     }
 }
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Sản phẩm - ' + ${categoryName}">Sản phẩm theo danh mục</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-content pt-4">
+    <h2 class="text-center mb-4" th:text="'Danh mục: ' + ${categoryName}">Tên danh mục</h2>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+        <div class="col" th:each="product : ${products}">
+            <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
+                    <img th:if="${product.image != null}"
+                         th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
+                         class="card-img-top" style="height: 220px; object-fit: cover;">
+                    <div th:if="${product.image == null}" class="text-center my-5">
+                        <i class="fa-solid fa-box fa-3x text-muted"></i>
+                    </div>
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên sản phẩm</h6>
+                        <p class="text-danger fw-bold mb-0"
+                           th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
+                    </div>
+                </a>
+                <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">
+                    <form th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/category/{slug}/page/{pageNum}(slug=${categorySlug}, pageNum=${currentPage - 1})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/category/{slug}/page/{pageNum}(slug=${categorySlug}, pageNum=${i})}"
+                   th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/category/{slug}/page/{pageNum}(slug=${categorySlug}, pageNum=${currentPage + 1})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
+</body>
+</html>

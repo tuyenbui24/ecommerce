@@ -95,7 +95,6 @@
         Hiển thị nhân viên [[${startStaff}]] đến [[${endStaff}]] / Tổng [[${totalStaff}]]
     </div>
 
-    <!-- Pagination -->
     <div class="d-flex justify-content-center mt-3" th:if="${totalStaff > 0}">
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPages == 1} ? 'disabled'">
@@ -104,7 +103,10 @@
             <li class="page-item" th:classappend="${currentPages == 1} ? 'disabled'">
                 <a class="page-link" th:href="@{/staff/page/{p}(p=${currentPages - 1})}">Trước</a>
             </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(
+                T(java.lang.Math).max(1, currentPages - 1),
+                T(java.lang.Math).min(totalPages, currentPages + 1))}"
                 th:classappend="${i == currentPages} ? 'active'">
                 <a class="page-link" th:href="@{/staff/page/{p}(p=${i})}" th:text="${i}"></a>
             </li>

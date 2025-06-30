@@ -16,12 +16,14 @@ public class ProductMapper {
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setQuantity(product.getQuantity());
+        dto.setDescription(product.getDescription());
         dto.setImage(product.getImage());
         dto.setEnabled(product.isEnabled());
 
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
             dto.setCategoryName(product.getCategory().getName());
+            dto.setCategorySlug(product.getCategory().getSlug());
         }
         return dto;
     }
@@ -34,6 +36,7 @@ public class ProductMapper {
                 .name(request.getName())
                 .price(request.getPrice())
                 .quantity(request.getQuantity())
+                .description(request.getDescription())
                 .image(request.getImage() == null || request.getImage().isEmpty()
                         ? Product.DEFAULT_IMAGE
                         : request.getImage())
