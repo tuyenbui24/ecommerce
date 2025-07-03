@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/register", "/process-register",
                                 "/login", "/css/**", "/js/**", "/product-image/**",
-                                "/img/**", "/bootstrap/**", "/fontawesome/**").permitAll()
+                                "/img/**", "/bootstrap/**", "/fontawesome/**","/products/detail/**").permitAll()
                         .requestMatchers("/staffs/**", "/users/**", "/products/**").hasRole("ADMIN")
                         .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
                         .anyRequest().authenticated())

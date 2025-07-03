@@ -5,7 +5,7 @@
 }
 
 .mt-content {
-    margin-top: 126px;
+    margin-top: 150px;
 }
 
 .pt-content {
@@ -48,8 +48,63 @@
 }
 
 .card-img-top {
-    height: 196px;
+    height: 200px;
     object-fit: cover;
+}
+
+.scroll-slider {
+    cursor: grab;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+.scroll-slider.dragging {
+    cursor: grabbing;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.scroll-slider::-webkit-scrollbar {
+    display: none;
+}
+.slider-arrow {
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    background-color: #fcaf17;
+    border-radius: 50%;
+}
+
+.product-image {
+    max-width: 400px;
+    height: auto;
+    border-radius: 6px;
+}
+
+.quantity-box {
+    display: flex;
+    width: 120px;
+}
+
+.quantity-box button {
+    width: 32px;
+}
+
+.product-description {
+    font-size: 16px;
+    color: #444;
+}
+
+.price {
+    font-size: 24px;
+    color: #e53935;
+    font-weight: 600;
+}
+
+.btn-add-cart {
+    background-color: #ffb300;
+    color: #000;
+    font-weight: bold;
 }
 
 .dropdown:hover .dropdown-menu {
@@ -74,7 +129,6 @@ a:hover:not(.btn):not(.dropdown-item) {
 }
 
 .btn-warning:hover {
-    border: 1px solid #fff;
     background-color: #e69c08;
 }
 
@@ -346,5 +400,8 @@ a:hover:not(.btn):not(.dropdown-item) {
         background-color: transparent;
         border: 0;
         box-shadow: none;
+    }
+    .pt-content {
+        padding: 0 12px;
     }
 }

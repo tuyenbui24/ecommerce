@@ -1,15 +1,33 @@
 <div th:fragment="menu" xmlns:sec="http://www.w3.org/1999/xhtml">
     <ul class="nav flex-wrap nav-main">
-        <li class="nav-item me-3"><a class="nav-link fw-bold text-warning" href="#">KKKK</a></li>
-        <li class="nav-item me-3"><a class="nav-link fw-bold text-danger" href="#">COUPON XỊN</a></li>
         <li class="nav-item me-3 dropdown">
-            <a class="nav-link fw-bold text-primary dropdown-toggle" href="#" id="nam-dropdown">NAM</a>
-            <ul class="dropdown-menu" id="nam-dropdown-menu">
-                <li><a class="dropdown-item" href="#">Quần Nam</a></li>
-                <li><a class="dropdown-item" href="#">Áo Nam</a></li>
-                <li><a class="dropdown-item" href="#">Phụ Kiện Nam</a></li>
+            <a class="nav-link fw-bold text-danger dropdown-toggle" href="#" id="nam-dropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                NAM
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="nam-dropdown">
+                <li th:each="entry : ${categoryProducts}" th:if="${entry.value[0].categorySlug.contains('nam')}">
+                    <a class="dropdown-item"
+                       th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
+                       th:text="${entry.key}">Tên danh mục</a>
+                </li>
             </ul>
         </li>
+
+        <li class="nav-item me-3 dropdown">
+            <a class="nav-link fw-bold text-danger dropdown-toggle" href="#" id="nu-dropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                NỮ
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="nu-dropdown">
+                <li th:each="entry : ${categoryProducts}" th:if="${entry.value[0].categorySlug.contains('nu')}">
+                    <a class="dropdown-item"
+                       th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
+                       th:text="${entry.key}">Tên danh mục</a>
+                </li>
+            </ul>
+        </li>
+
         <li class="nav-item me-3" sec:authorize="hasRole('ADMIN')">
             <a class="nav-link fw-bold text-danger" th:href="@{/staff}">STAFF</a>
         </li>

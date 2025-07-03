@@ -137,4 +137,13 @@ public class ProductController {
         ra.addFlashAttribute("message", "Đã " + statusStr + " sản phẩm ID " + id);
         return "redirect:/products";
     }
+
+    @GetMapping("/detail/{id}")
+    public String showProductDetail(@PathVariable Integer id, Model model) {
+        ProductDTO product = productService.getDtoById(id);
+
+        model.addAttribute("product", product);
+        return "product_detail";
+    }
+
 }

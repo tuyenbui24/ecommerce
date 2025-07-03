@@ -25,9 +25,21 @@
                         <h5 th:text="${item.productName}"></h5>
                         <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center">
                             <input type="hidden" name="itemId" th:value="${item.id}">
-                            <input type="number" name="quantity" min="1" th:value="${item.quantity}" class="form-control w-25 me-2">
+
+                            <div class="input-group w-50 me-2">
+                                <button type="button" class="btn btn-outline-secondary"
+                                        onclick="changeQuantity(this, -1)">-</button>
+
+                                <input type="number" name="quantity" min="1" th:value="${item.quantity}"
+                                       class="form-control text-center" />
+
+                                <button type="button" class="btn btn-outline-secondary"
+                                        onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+
                             <button type="submit" class="btn btn-secondary">Cập nhật</button>
                         </form>
+
                     </div>
                     <div class="col-md-3 text-end">
                         <p th:text="${#numbers.formatDecimal(item.productPrice * item.quantity, 0, 'COMMA', 3, 'POINT')} + ' đ'" class="fw-bold text-danger"></p>
@@ -59,5 +71,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    function changeQuantity(button, amount) {
+        const input = button.parentElement.querySelector("input[name='quantity']");
+        let current = parseInt(input.value);
+        if (!isNaN(current)) {
+            let updated = current + amount;
+            input.value = updated < 1 ? 1 : updated;
+        }
+    }
+</script>
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.min.js}"></script>
 </body>
 </html>

@@ -11,11 +11,13 @@
 </head>
 <body>
 
+<!-- Header -->
 <div th:replace="fragments/header :: header"></div>
 
-<div class="container mt-content pt-5 pt-content">
+<!-- Content -->
+<div class="container mt-content pt-content">
 
-    <!-- Toast thêm vào giỏ -->
+    <!-- Toast -->
     <div th:if="${addedProductName}" class="position-fixed bottom-0 end-0 m-4 z-3">
         <div id="cart-toast" class="toast show align-items-center text-bg-success border-0 shadow" role="alert">
             <div class="d-flex">
@@ -26,9 +28,10 @@
         </div>
     </div>
 
+    <!-- Tiêu đề -->
     <h2 class="text-center mb-4" th:text="${searchMode} ? 'Kết quả tìm kiếm' : 'Sản phẩm nổi bật'">Sản phẩm</h2>
 
-    <!-- PHẦN KẾT QUẢ TÌM KIẾM -->
+    <!-- Kết quả tìm kiếm -->
     <div th:if="${searchMode}">
         <div class="mb-3">
             <h5 class="text-muted">Kết quả tìm kiếm cho: "<span th:text="${keyword}"></span>"</h5>
@@ -44,14 +47,14 @@
                     <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
                         <img th:if="${product.image != null}"
                              th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
-                             class="card-img-top" style="height: 200px; object-fit: cover;">
+                             class="card-img-top">
                         <div th:if="${product.image == null}" class="text-center my-5">
                             <i class="fa-solid fa-box fa-3x text-muted"></i>
                         </div>
                         <div class="card-body p-2">
                             <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên sản phẩm</h6>
                             <p class="text-danger fw-bold mb-0"
-                               th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'"></p>
+                               th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
                         </div>
                     </a>
                     <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">
@@ -67,7 +70,7 @@
             </div>
         </div>
 
-        <!-- PHÂN TRANG TÌM KIẾM -->
+        <!-- Phân trang -->
         <nav th:if="${totalPages > 1}" class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
@@ -84,52 +87,74 @@
         </nav>
     </div>
 
-    <!-- PHẦN SẢN PHẨM NỔI BẬT TRANG CHỦ -->
+    <!-- Sản phẩm nổi bật -->
     <div th:if="${!searchMode}">
         <div th:each="entry : ${categoryProducts}">
-            <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="fw-bold" th:text="${entry.key}">Tên danh mục</h4>
                 <a th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
                    class="text-decoration-none fw-bold">Xem thêm ></a>
             </div>
 
-            <div class="d-flex overflow-auto pb-3">
-                <div class="card me-3 d-flex flex-column justify-content-between"
-                     th:each="product : ${entry.value}">
-                    <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
-                        <img th:if="${product.image != null}"
-                             th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
-                             class="card-img-top">
-                        <div th:if="${product.image == null}" class="text-center my-5">
-                            <i class="fa-solid fa-box fa-3x text-muted"></i>
-                        </div>
-                        <div class="card-body p-2">
-                            <h6 class="card-title" th:text="${product.name}">Tên sản phẩm</h6>
-                            <p class="text-danger fw-bold mb-0"
-                               th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'"></p>
-                        </div>
-                    </a>
+            <div class="position-relative">
+                <!-- Mũi tên trái -->
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y slider-arrow shadow"
+                        onclick="scrollSlider(this, -1)">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
 
-                    <div class="card-footer border-0 bg-white px-2 pb-2">
-                        <form th:action="@{/cart/add}" method="post">
-                            <input type="hidden" name="productId" th:value="${product.id}"/>
-                            <input type="hidden" name="quantity" value="1"/>
-                            <button type="submit" class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
-                            </button>
-                        </form>
+                <!-- Slider ngang -->
+                <div class="scroll-slider d-flex overflow-hidden pb-3 px-4"
+                     onmousedown="startDrag(event)"
+                     onmousemove="onDrag(event)"
+                     onmouseup="stopDrag()"
+                     onmouseleave="stopDrag()"
+                     onscroll="toggleArrows(this)">
+                    <div class="card me-3 d-flex flex-column justify-content-between flex-shrink-0"
+                         style="width: 200px;"
+                         th:each="product : ${entry.value}">
+                        <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
+                            <img th:if="${product.image != null}"
+                                 th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
+                                 class="card-img-top">
+                            <div th:if="${product.image == null}" class="text-center my-5">
+                                <i class="fa-solid fa-box fa-3x text-muted"></i>
+                            </div>
+                            <div class="card-body p-2">
+                                <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên</h6>
+                                <p class="text-danger fw-bold mb-0"
+                                   th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
+                            </div>
+                        </a>
+                        <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="productId" th:value="${product.id}" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Mũi tên phải -->
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y slider-arrow shadow"
+                        onclick="scrollSlider(this, 1)">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Thông báo -->
     <div th:if="${message}" class="alert alert-success text-center">
         [[${message}]]
     </div>
 
 </div>
 
+<!-- Script -->
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/fontawesome/js/all.min.js}"></script>
 <script th:src="@{/js/main.js}"></script>

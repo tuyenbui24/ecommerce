@@ -93,6 +93,68 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    let isDragging = false;
+    let startX, scrollLeft;
+
+    window.startDrag = function(e) {
+        const el = e.currentTarget;
+        isDragging = true;
+        el.classList.add("dragging");
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+        e.preventDefault();
+    }
+
+    window.onDrag = function (e) {
+        if (!isDragging) return;
+        const el = e.currentTarget;
+        e.preventDefault();
+        const x = e.pageX - el.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        el.scrollLeft = scrollLeft - walk;
+    }
+
+    window.stopDrag = function () {
+        isDragging = false;
+        document.querySelectorAll('.scroll-slider').forEach(el => el.classList.remove("dragging"));
+    }
+
+    window.scrollSlider = function (button, direction) {
+        const slider = button.parentElement.querySelector(".scroll-slider");
+        slider.scrollBy({ left: direction * 300, behavior: 'smooth' });
+
+        // cập nhật mũi tên sau khi scroll
+        setTimeout(() => toggleArrows(slider), 300);
+    }
+
+
+    function toggleArrows(slider) {
+        const container = slider.parentElement;
+        const leftArrow = container.querySelector(".slider-arrow:first-of-type");
+        const rightArrow = container.querySelector(".slider-arrow:last-of-type");
+
+        // Hiện mũi tên trái nếu có thể cuộn trái
+        leftArrow.style.display = slider.scrollLeft > 0 ? 'block' : 'none';
+
+        // Hiện mũi tên phải nếu còn nội dung phía phải
+        const maxScrollLeft = slider.scrollWidth - slider.clientWidth - 5;
+        rightArrow.style.display = slider.scrollLeft < maxScrollLeft ? 'block' : 'none';
+    }
+
+    // Gắn sự kiện cho slider
+    document.querySelectorAll('.scroll-slider').forEach(slider => {
+        slider.addEventListener('mousedown', startDrag);
+        slider.addEventListener('scroll', () => toggleArrows(slider));
+    });
+
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+
+
+    window.addEventListener("load", () => {
+        document.querySelectorAll('.scroll-slider').forEach(toggleArrows);
+    });
+
     // Kích hoạt dropdown hover ngay từ đầu
     addDropdownHoverEffect();
     window.addEventListener("resize", addDropdownHoverEffect);
