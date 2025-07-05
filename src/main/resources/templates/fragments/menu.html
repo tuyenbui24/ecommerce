@@ -6,7 +6,8 @@
                 NAM
             </a>
             <ul class="dropdown-menu" aria-labelledby="nam-dropdown">
-                <li th:each="entry : ${categoryProducts}" th:if="${entry.value[0].categorySlug.contains('nam')}">
+                <li th:each="entry : ${categoryProducts}"
+                    th:if="${entry.value != null and entry.value.size() > 0 and entry.value[0].categorySlug.contains('nam')}">
                     <a class="dropdown-item"
                        th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
                        th:text="${entry.key}">Tên danh mục</a>
@@ -20,7 +21,8 @@
                 NỮ
             </a>
             <ul class="dropdown-menu" aria-labelledby="nu-dropdown">
-                <li th:each="entry : ${categoryProducts}" th:if="${entry.value[0].categorySlug.contains('nu')}">
+                <li th:each="entry : ${categoryProducts}"
+                    th:if="${entry.value != null and entry.value.size() > 0 and entry.value[0].categorySlug.contains('nu')}">
                     <a class="dropdown-item"
                        th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
                        th:text="${entry.key}">Tên danh mục</a>
@@ -28,6 +30,7 @@
             </ul>
         </li>
 
+        <!-- Admin links -->
         <li class="nav-item me-3" sec:authorize="hasRole('ADMIN')">
             <a class="nav-link fw-bold text-danger" th:href="@{/staff}">STAFF</a>
         </li>
@@ -40,6 +43,5 @@
         <li class="nav-item me-3" sec:authorize="hasRole('ADMIN')">
             <a class="nav-link fw-bold text-danger" th:href="@{/orders/admin}">ORDER LIST</a>
         </li>
-        <!-- Thêm các mục khác tương tự -->
     </ul>
 </div>

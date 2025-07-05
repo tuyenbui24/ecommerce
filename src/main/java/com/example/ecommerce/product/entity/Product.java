@@ -1,10 +1,12 @@
 package com.example.ecommerce.product.entity;
 
 import com.example.ecommerce.category.entity.Category;
+import com.example.ecommerce.order.entity.OrderItem;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,6 +41,9 @@ public class Product {
 
     @Column(nullable = false)
     private boolean enabled;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)

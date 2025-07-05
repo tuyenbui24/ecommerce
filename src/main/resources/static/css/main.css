@@ -369,17 +369,13 @@ a:hover:not(.btn):not(.dropdown-item) {
         display: block;
         padding: 10px 0;
     }
-
-
     #menu-list .dropdown-menu {
         display: none;
         position: static !important;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        width: 100%;
-        padding-left: 20px;
-        list-style: none;
+        transform: none !important;
+        box-shadow: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
 
     #menu-list .dropdown-menu.show {
@@ -389,19 +385,73 @@ a:hover:not(.btn):not(.dropdown-item) {
     #menu-list .dropdown-item {
         padding: 5px 0;
     }
+    .logout-mobile-only {
+        display: block !important;
+    }
 }
 
 @media (max-width: 768px) {
     .dropdown-menu {
         position: static !important;
-        float: none;
-        width: auto;
-        margin-top: 0;
-        background-color: transparent;
-        border: 0;
-        box-shadow: none;
+        transform: none !important;
+        box-shadow: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
+
     .pt-content {
         padding: 0 12px;
+    }
+    .header .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .header .row.align-items-center {
+        flex-wrap: nowrap;
+    }
+
+    .logo-img-sm {
+        height: 40px;
+    }
+
+    .header .col-4:first-child {
+        display: flex;
+        align-items: center;
+    }
+
+    .header .col-4.text-end {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .header .header-mb {
+        color: #fcaf17;
+        padding: 0 5px;
+        font-size: 20px;
+    }
+
+    #menu-button {
+        font-size: 22px;
+        padding: 0;
+        background: none;
+        color: #fcaf17;
+    }
+
+    #menu-list {
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+    }
+
+    .show-menu {
+        display: block !important;
+    }
+
+    .cart-icon-mobile {
+        position: relative;
+        font-size: 1.4rem;
+        color: #fcaf17;
     }
 }

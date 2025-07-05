@@ -155,6 +155,15 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('.scroll-slider').forEach(toggleArrows);
     });
 
+    const searchToggle = document.querySelector('.header-mb.search-toggle');
+    const searchForm = document.getElementById('search-form-mobile');
+
+    if (searchToggle && searchForm) {
+        searchToggle.addEventListener('click', function () {
+            searchForm.classList.toggle('d-none');
+        });
+    }
+
     // Kích hoạt dropdown hover ngay từ đầu
     addDropdownHoverEffect();
     window.addEventListener("resize", addDropdownHoverEffect);

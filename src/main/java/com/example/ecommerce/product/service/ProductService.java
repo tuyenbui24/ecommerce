@@ -4,6 +4,9 @@ import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.category.repository.CategoryRepository;
 import com.example.ecommerce.config.exception.CategoryNotFoundExp;
 import com.example.ecommerce.config.exception.ProductNotFoundExp;
+import com.example.ecommerce.order.entity.OrderItem;
+import com.example.ecommerce.order.entity.OrderStatus;
+import com.example.ecommerce.order.repo.OrderItemRepository;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
 import com.example.ecommerce.product.dto.ProductDTO;
 import com.example.ecommerce.product.entity.Product;
@@ -11,6 +14,7 @@ import com.example.ecommerce.product.mapper.ProductMapper;
 import com.example.ecommerce.product.repository.ProductRepository;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +25,16 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public static final int PRODUCT_PER_PAGE = 5;
-
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository,
+                          CategoryRepository categoryRepository,
+                          OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.orderItemRepository = orderItemRepository;
     }
+    public static final int PRODUCT_PER_PAGE = 5;
 
     public List<ProductDTO> findAllProduct() {
         return productRepository.findAll(Sort.by("name").ascending())
@@ -94,10 +101,28 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundExp("Không tìm thấy sản phẩm với ID: " + id));
     }
 
+    @Transactional
     public void delete(Integer id) throws ProductNotFoundExp {
         Product product = getEntityById(id);
+
+        List<OrderItem> relatedItems = product.getOrderItems();
+
+        boolean hasActiveOrders = relatedItems.stream()
+                .anyMatch(item -> {
+                    OrderStatus status = item.getOrder().getStatus();
+                    return status != OrderStatus.COMPLETED && status != OrderStatus.CANCELED;
+                });
+        if (hasActiveOrders) {
+            throw new IllegalStateException("Không thể xoá sản phẩm vì đang nằm trong đơn hàng chưa hoàn tất.");
+        }
         productRepository.delete(product);
     }
+
+
+//    public void delete(Integer id) throws ProductNotFoundExp {
+//        Product product = getEntityById(id);
+//        productRepository.delete(product);
+//    }
 
     public void updateStatus(Integer id, boolean enabled) {
         productRepository.updateEnabled(id, enabled);

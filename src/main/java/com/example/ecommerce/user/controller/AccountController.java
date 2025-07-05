@@ -31,7 +31,7 @@ public class AccountController {
 
     @PostMapping("/update")
     public String updateAccount(@ModelAttribute("user") UserDTO dto,
-                                @RequestParam String oldPassword,
+                                @RequestParam(required = false) String oldPassword,
                                 @RequestParam(required = false) String newPassword,
                                 @RequestParam(required = false) String confirmPassword,
                                 RedirectAttributes ra) {
@@ -45,6 +45,11 @@ public class AccountController {
 
         if ((newPassword != null && !newPassword.isBlank()) ||
                 (confirmPassword != null && !confirmPassword.isBlank())) {
+
+            if (oldPassword == null || oldPassword.isBlank()) {
+                ra.addFlashAttribute("error", "Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu!");
+                return "redirect:/account";
+            }
 
             if (!userService.checkPassword(user, oldPassword)) {
                 ra.addFlashAttribute("error", "Mật khẩu hiện tại không đúng!");
