@@ -29,7 +29,7 @@
     </div>
 
     <!-- Tiêu đề -->
-    <h2 class="text-center mb-4" th:text="${searchMode} ? 'Kết quả tìm kiếm' : 'Sản phẩm nổi bật'">Sản phẩm</h2>
+    <h2 class="text-center mb-4 col-bgr" th:text="${searchMode} ? 'Kết quả tìm kiếm' : 'Sản phẩm nổi bật'">Sản phẩm</h2>
 
     <!-- Kết quả tìm kiếm -->
     <div th:if="${searchMode}">
@@ -91,14 +91,15 @@
     <div th:if="${!searchMode}">
         <div th:each="entry : ${categoryProducts}">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold" th:text="${entry.key}">Tên danh mục</h4>
+                <h4 class="fw-bold col-text" th:text="${entry.key}">Tên danh mục</h4>
                 <a th:href="@{'/category/' + ${entry.value[0].categorySlug} + '/page/1'}"
-                   class="text-decoration-none fw-bold">Xem thêm ></a>
+                   class="text-decoration-none fw-bold col-text">Xem thêm ></a>
             </div>
 
-            <div class="position-relative">
+            <div class="position-relative d-none d-md-block">
                 <!-- Mũi tên trái -->
-                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y slider-arrow shadow"
+                <button class="btn btn-light position-absolute top-50 start-0
+                 translate-middle-y slider-arrow shadow"
                         onclick="scrollSlider(this, -1)">
                     <i class="fa fa-chevron-left"></i>
                 </button>
@@ -130,8 +131,8 @@
                             <form th:action="@{/cart/add}" method="post">
                                 <input type="hidden" name="productId" th:value="${product.id}" />
                                 <input type="hidden" name="quantity" value="1" />
-                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
-                                    <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
+                                <button type="submit" class="btn btn-cart-custom btn-sm w-100 rounded fw-bold">
+                                <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
                                 </button>
                             </form>
                         </div>
@@ -139,11 +140,43 @@
                 </div>
 
                 <!-- Mũi tên phải -->
-                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y slider-arrow shadow"
+                <button class="btn btn-light position-absolute top-50 end-0
+                 translate-middle-y slider-arrow shadow"
                         onclick="scrollSlider(this, 1)">
                     <i class="fa fa-chevron-right"></i>
                 </button>
             </div>
+
+            <!-- Hiển thị dạng lưới khi màn hình nhỏ -->
+            <div class="d-flex d-md-none row row-cols-2 g-3 px-2">
+                <div class="col" th:each="product : ${entry.value}">
+                    <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+                        <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
+                            <img th:if="${product.image != null}"
+                                 th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
+                                 class="card-img-top">
+                            <div th:if="${product.image == null}" class="text-center my-5">
+                                <i class="fa-solid fa-box fa-3x text-muted"></i>
+                            </div>
+                            <div class="card-body p-2">
+                                <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên</h6>
+                                <p class="text-danger fw-bold mb-0"
+                                   th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
+                            </div>
+                        </a>
+                        <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="productId" th:value="${product.id}" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fa fa-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

@@ -48,9 +48,9 @@
           </div>
           <div class="d-inline-block">
             <div th:unless="${#authorization.expression('isAuthenticated()')}">
-              <a class="text-decoration-none fw-bold text-primary mx-1" th:href="@{/register}">ĐĂNG KÝ</a>
+              <a class="text-decoration-none fw-bold col-text mx-1" th:href="@{/register}">ĐĂNG KÝ</a>
               <span>/</span>
-              <a class="text-decoration-none fw-bold text-primary mx-1" th:href="@{/login}">ĐĂNG NHẬP</a>
+              <a class="text-decoration-none fw-bold col-text mx-1" th:href="@{/login}">ĐĂNG NHẬP</a>
             </div>
             <div th:if="${#authorization.expression('isAuthenticated()')}" class="user-dropdown dropdown">
               <a href="#" class="user-icon" data-bs-toggle="dropdown">
@@ -83,7 +83,7 @@
             <i class="fa-solid fa-user fs-4 text-primary"></i>
           </a>
           <a th:if="${#authorization.expression('isAuthenticated()')}"
-             sec:authorize="hasRole('USER')">
+             sec:authorize="hasRole('USER')"
              th:href="@{/account}" class="ms-3 header-mb">
             <i class="fa-solid fa-user fs-4 text-primary"></i>
           </a>

@@ -14,29 +14,29 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container mt-content">
-    <h2 class="text-center mb-4" th:text="'Danh mục: ' + ${categoryName}">Tên danh mục</h2>
+    <h2 class="text-center mb-4 col-bgr" th:text="'Danh mục: ' + ${categoryName}">Tên danh mục</h2>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
         <div class="col" th:each="product : ${products}">
             <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
                 <a th:href="@{'/products/detail/' + ${product.id}}" class="text-decoration-none text-dark">
                     <img th:if="${product.image != null}"
                          th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
-                         class="card-img-top" style="height: 220px; object-fit: cover;">
+                         class="card-img-top product-hm">
                     <div th:if="${product.image == null}" class="text-center my-5">
                         <i class="fa-solid fa-box fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body p-2">
-                        <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên sản phẩm</h6>
-                        <p class="text-danger fw-bold mb-0"
-                           th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
-                    </div>
                 </a>
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên sản phẩm</h6>
+                    <p class="text-danger fw-bold mb-0"
+                       th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
+                </div>
                 <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">
                     <form th:action="@{/cart/add}" method="post">
                         <input type="hidden" name="productId" th:value="${product.id}" />
                         <input type="hidden" name="quantity" value="1" />
-                        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                        <button type="submit" class="btn btn-cart-custom btn-sm w-100 rounded fw-bold">
                             <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ
                         </button>
                     </form>
