@@ -17,7 +17,7 @@ public class StaffMapper {
         dto.setFirstName(staff.getFirstName());
         dto.setLastName(staff.getLastName());
         dto.setFullName(staff.getFullName());
-        dto.setPhotoPath(staff.getPhotosImagePath());
+        dto.setPhotoPath(staff.getPhotos());
         dto.setEnabled(staff.isEnabled());
 
         dto.setRoles(

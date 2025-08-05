@@ -40,7 +40,7 @@ public class MainController {
             model.addAttribute("categoryProducts", productService.getProductsByCategory(9));
             model.addAttribute("currentPage", 1);
             model.addAttribute("totalPages", 1);
-            model.addAttribute("categorySlug", ""); // tránh lỗi Thymeleaf khi phân trang
+            model.addAttribute("categorySlug", "");
         }
         return "index";
     }

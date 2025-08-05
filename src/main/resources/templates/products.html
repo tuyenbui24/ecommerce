@@ -64,7 +64,8 @@
                 <td th:text="${product.name}"></td>
                 <td>
                     <i th:if="${product.image == null}" class="fa-solid fa-box fa-2x text-muted"></i>
-                    <img th:if="${product.image != null}" th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
+                    <img th:if="${product.image != null}"
+                         th:src="@{'/product-image/' + ${product.id} + '/' + ${product.image}}"
                          style="width:80px">
                 </td>
                 <td th:attr="title=${product.description}" class="description">

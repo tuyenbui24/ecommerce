@@ -33,7 +33,7 @@ public class Staff {
     @Column(name = "last_name", length = 50, nullable = false)
     private String lastName;
 
-    @Column(length = 50)
+    @Column()
     private String photos;
 
     @Column(nullable = false)
@@ -60,11 +60,11 @@ public class Staff {
         roles.add(role);
     }
 
-    @Transient
-    public String getPhotosImagePath() {
-        if (id == null || photos == null) return "/images/default-staff.png";
-        return "/staff-photos/" + this.id + "/" + this.photos;
-    }
+//    @Transient
+//    public String getPhotosImagePath() {
+//        if (id == null || photos == null) return "/images/default-staff.png";
+//        return "/staff-photos/" + this.id + "/" + this.photos;
+//    }
 
     @Transient
     public String getFullName() {

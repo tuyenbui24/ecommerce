@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 
 public class CartMapper {
 
-    // ------------------ Entity → DTO ------------------
-
     public static CartDTO toDTO(Cart cart) {
         if (cart == null) return null;
         CartDTO dto = new CartDTO();
@@ -37,8 +35,6 @@ public class CartMapper {
         dto.setImage(item.getProduct().getImage());
         return dto;
     }
-
-    // ------------------ DTO → Entity ------------------
 
     public static Cart toEntity(CartDTO dto, User user) {
         Cart cart = new Cart();

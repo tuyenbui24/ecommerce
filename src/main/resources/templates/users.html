@@ -42,14 +42,22 @@
                 <th>Họ</th>
                 <th>Tên</th>
                 <th>Email</th>
+                <th>Xoá</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="user : ${listUsers}">
-                <td th:text="${user.id}">1</td>
-                <td th:text="${user.firstName}">Nguyễn</td>
-                <td th:text="${user.lastName}">Văn A</td>
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
                 <td th:text="${user.email}">example@email.com</td>
+                <td>
+                    <a th:href="@{'/user/delete/' + ${user.id}}"
+                       th:onclick="'return confirm(\'Xác nhận xóa user ID ' + ${user.id} + '?\')'"
+                       class="text-danger">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>

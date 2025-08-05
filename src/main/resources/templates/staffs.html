@@ -60,7 +60,9 @@
                 <td th:text="${staff.email}"></td>
                 <td>
                     <i th:if="${staff.photoPath == null}" class="fa-solid fa-image-portrait fa-2x text-muted"></i>
-                    <img th:if="${staff.photoPath != null}" th:src="@{${staff.photoPath}}" style="width:80px">
+                    <img th:if="${staff.photoPath != null}"
+                         th:src="@{'/staff-photos/' + ${staff.id} + '/' + ${staff.photoPath}}"
+                         style="width:80px">
                 </td>
                 <td th:text="${staff.firstName}"></td>
                 <td th:text="${staff.lastName}"></td>

@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Hiện menu mobile
     const menuButton = document.querySelector("#menu-button");
     const menuList = document.querySelector("#menu-list");
 
@@ -123,7 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const slider = button.parentElement.querySelector(".scroll-slider");
         slider.scrollBy({ left: direction * 300, behavior: 'smooth' });
 
-        // cập nhật mũi tên sau khi scroll
         setTimeout(() => toggleArrows(slider), 300);
     }
 
@@ -133,10 +131,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const leftArrow = container.querySelector(".slider-arrow:first-of-type");
         const rightArrow = container.querySelector(".slider-arrow:last-of-type");
 
-        // Hiện mũi tên trái nếu có thể cuộn trái
         leftArrow.style.display = slider.scrollLeft > 0 ? 'block' : 'none';
 
-        // Hiện mũi tên phải nếu còn nội dung phía phải
         const maxScrollLeft = slider.scrollWidth - slider.clientWidth - 5;
         rightArrow.style.display = slider.scrollLeft < maxScrollLeft ? 'block' : 'none';
     }
@@ -164,7 +160,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Kích hoạt dropdown hover ngay từ đầu
     addDropdownHoverEffect();
     window.addEventListener("resize", addDropdownHoverEffect);
 });

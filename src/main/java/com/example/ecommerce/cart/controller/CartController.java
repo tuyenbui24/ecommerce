@@ -61,7 +61,7 @@ public class CartController {
     @PostMapping("/remove")
     public String removeItem(@RequestParam Integer itemId) {
         Integer userId = securityUtils.getCurrentUserId();
-        cartService.removeItem(userId, itemId);
+        cartService.removeItem(itemId);
         return "redirect:/cart";
     }
 

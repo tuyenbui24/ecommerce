@@ -23,13 +23,11 @@ public class OrderController {
         this.securityUtils = securityUtils;
     }
 
-    // GET: Hiển thị form nhập địa chỉ nhận hàng
     @GetMapping("/checkout")
     public String showCheckoutPage() {
         return "order_checkout";
     }
 
-    // POST: Xử lý đặt hàng
     @PostMapping("/checkout")
     public String placeOrder(@RequestParam("address") String shippingAddress,
                              @RequestParam(value = "note", required = false) String note,
@@ -40,7 +38,6 @@ public class OrderController {
         return "redirect:/orders/history";
     }
 
-    // GET: Xem lịch sử đơn hàng
     @GetMapping("/history")
     public String orderHistory(Model model) {
         Integer userId = securityUtils.getCurrentUserId();

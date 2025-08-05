@@ -7,7 +7,6 @@ import com.example.ecommerce.product.entity.Product;
 
 public class ProductMapper {
 
-    // Chuyển từ Entity sang DTO
     public static ProductDTO toDTO(Product product) {
         if (product == null) return null;
 
@@ -28,7 +27,6 @@ public class ProductMapper {
         return dto;
     }
 
-    // Chuyển từ CreateRequest (DTO) sang Entity
     public static Product toEntity(ProductCreateRequest request, Category category) {
         if (request == null || category == null) return null;
 

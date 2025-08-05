@@ -68,10 +68,8 @@ public class ProductService {
         Product product;
 
         if (request.getId() == null) {
-            // Tạo mới
             product = ProductMapper.toEntity(request, category);
         } else {
-            // Cập nhật
             product = productRepository.findById(request.getId())
                     .orElseThrow(() -> new ProductNotFoundExp("Không tìm thấy sản phẩm với ID: " + request.getId()));
 

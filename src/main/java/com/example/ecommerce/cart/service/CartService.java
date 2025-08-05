@@ -38,7 +38,6 @@ public class CartService {
 
     @Transactional
     public CartDTO getCartByUserId(Integer userId) {
-        // Lấy cart hoặc tạo mới nếu chưa có
         Cart cart = cartRepo.findByUserId(userId).orElseGet(() -> {
             User user = userRepo.findById(userId).orElseThrow();
             Cart newCart = new Cart();
@@ -56,7 +55,7 @@ public class CartService {
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         dto.setTotalPrice(total);
-        dto.setDiscount(BigDecimal.ZERO); // Tùy chính sách
+        dto.setDiscount(BigDecimal.ZERO);
         dto.setFinalPrice(total.subtract(dto.getDiscount()));
         return dto;
     }
@@ -90,12 +89,12 @@ public class CartService {
     }
 
     @Transactional
-    public void removeItem(Integer userId, Integer cartItemId) {
+    public void removeItem(Integer cartItemId) {
         CartItem item = cartItemRepo.findById(cartItemId).orElseThrow();
         Cart cart = item.getCart();
 
-        cart.getItems().remove(item); // Xoá khỏi Set<CartItem>
-        cartRepo.save(cart); // JPA sẽ tự xoá do orphanRemoval = true
+        cart.getItems().remove(item);
+        cartRepo.save(cart);
     }
 
     public void updateQuantity(Integer itemId, int quantity) {

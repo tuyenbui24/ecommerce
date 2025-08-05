@@ -62,4 +62,11 @@ public class UserController {
         model.addAttribute("keywordU", keyword);
         return "users";
     }
+
+    @GetMapping("/user/delete/{id}")
+    public String deleteStaff(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        userService.deleteById(id);
+        redirectAttributes.addFlashAttribute("message", "User ID " + id + " deleted successfully.");
+        return "redirect:/user";
+    }
 }

@@ -1,6 +1,7 @@
 
 package com.example.ecommerce.user.service;
 
+import com.example.ecommerce.config.exception.UserNotFoundExp;
 import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.repository.RoleRepository;
 import com.example.ecommerce.user.dto.UserDTO;
@@ -94,5 +95,9 @@ public class UserService {
 
         userRepo.save(user);
     }
-
+    public void deleteById(Integer id) throws UsernameNotFoundException {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundExp("Could not find any user with ID " + id));
+        userRepo.delete(user);
+    }
 }
