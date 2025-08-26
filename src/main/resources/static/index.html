@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <!-- Header (load bằng JS) -->
+    <div id="header-container"></div>
+
+    <!-- Content -->
+    <div class="container mt-content pt-content">
+        <!-- Toast -->
+        <div id="toast-container" class="position-fixed bottom-0 end-0 m-4 z-3" style="display:none;"></div>
+
+        <!-- Tiêu đề -->
+        <h2 class="text-center mb-4 col-bgr" id="main-title">Sản phẩm nổi bật</h2>
+
+        <!-- Kết quả tìm kiếm -->
+        <div id="search-result" style="display:none;"></div>
+
+        <!-- Sản phẩm nổi bật -->
+        <div id="featured-products"></div>
+
+        <!-- Thông báo -->
+        <div id="message-container" class="alert alert-success text-center" style="display:none;"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/fontawesome/js/all.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/header/header_menu.js"></script>
+</body>
+</html>

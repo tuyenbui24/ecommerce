@@ -30,31 +30,24 @@ public class StaffService {
         this.encoder = encoder;
     }
 
-    public List<StaffDTO> listStaffDTOByPage(int pageNum, String keyword) {
+    public Page<StaffDTO> listStaffDTOByPage(int pageNum, String keyword) {
         Pageable pageable = PageRequest.of(pageNum - 1, STAFFS_IN_PAGE, Sort.by("lastName").ascending());
         Page<Staff> staffPage = (keyword == null || keyword.isBlank())
                 ? staffRepo.findAll(pageable)
                 : staffRepo.searchS(keyword, pageable);
-
-        return staffPage.getContent().stream()
-                .map(StaffMapper::toDTO)
-                .toList();
+        return staffPage.map(StaffMapper::toDTO);
     }
 
     public List<Role> findAllRoles() {
         return roleRepo.findAll();
     }
 
-    public Staff save(StaffCreateRequest request) {
-        boolean staffUpdate = request.getId() != null;
-        Staff staff;
-
-        if (staffUpdate) {
-            staff = staffRepo.findById(request.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + request.getId()));
-        } else {
-            staff = new Staff();
-        }
+    public StaffDTO save(StaffCreateRequest request) {
+        boolean isUpdate = request.getId() != null;
+        Staff staff = isUpdate
+                ? staffRepo.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + request.getId()))
+                : new Staff();
 
         staff.setEmail(request.getEmail());
         staff.setFirstName(request.getFirstName());
@@ -62,14 +55,14 @@ public class StaffService {
         staff.setEnabled(request.isEnabled());
         staff.setPhotos(request.getPhotos());
 
-        if (!staffUpdate || (request.getPassword() != null && !request.getPassword().isBlank())) {
+        if (!isUpdate || (request.getPassword() != null && !request.getPassword().isBlank())) {
             staff.setPassword(encoder.encode(request.getPassword()));
         }
 
         List<Role> roles = roleRepo.findAllById(request.getRoleIds());
         staff.setRoles(Set.copyOf(roles));
 
-        return staffRepo.save(staff);
+        return StaffMapper.toDTO(staffRepo.save(staff));
     }
 
     public Staff getId(Integer id) throws UserNotFoundExp {

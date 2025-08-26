@@ -22,13 +22,11 @@ public class ProductRestController {
         this.productService = productService;
     }
 
-    // Lấy tất cả sản phẩm (sắp xếp theo tên)
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.findAllProduct());
     }
 
-    // Lấy danh sách sản phẩm có phân trang + tìm kiếm
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> listProducts(
             @RequestParam(defaultValue = "1") int page,
@@ -36,27 +34,23 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.listByPage(page, keyword));
     }
 
-    // Lấy sản phẩm theo ID
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer id) throws ProductNotFoundExp {
         return ResponseEntity.ok(productService.getDtoById(id));
     }
 
-    // Tạo hoặc cập nhật sản phẩm
     @PostMapping
     public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductCreateRequest request) {
         ProductDTO saved = productService.save(request);
         return ResponseEntity.ok(saved);
     }
 
-    // Xoá sản phẩm
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) throws ProductNotFoundExp {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Cập nhật trạng thái kích hoạt sản phẩm
     @PutMapping("/{id}/status")
     public ResponseEntity<Void> updateProductStatus(@PathVariable Integer id, @RequestParam boolean enabled) {
         productService.updateStatus(id, enabled);
@@ -71,7 +65,6 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.isProductNameUnique(id, name));
     }
 
-    // Lấy danh sách danh mục
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories() {
         return ResponseEntity.ok(productService.findAllCategory());

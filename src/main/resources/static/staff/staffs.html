@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>STAFF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+<!-- Scroll to Top -->
+<button onclick="topFunction()" id="btn-to-top" title="Go to top">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<!-- HEADER (loaded by JS) -->
+<div id="header-container"></div>
+
+<div class="container-fluid mt-content">
+    <h2 class="text-center">Danh sách nhân viên</h2>
+
+    <div id="messageBox" class="alert alert-success text-center d-none"></div>
+
+    <a href="/staff/staff_form.html" class="btn btn-success">
+        <i class="fa-regular fa-square-plus me-1"></i> Tạo mới
+    </a>
+
+    <form id="searchForm" class="d-flex justify-content-center align-items-center mb-4">
+        <label class="me-2">Tìm:</label>
+        <input type="text" id="keyword" name="keyword" class="form-control w-25 me-2"
+               placeholder="Nhập tên hoặc email" />
+        <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+        <button type="button" class="btn btn-secondary" onclick="clearFilter()">Xóa lọc</button>
+    </form>
+
+    <!-- Staff Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Ảnh</th>
+                <th>Họ</th>
+                <th>Tên</th>
+                <th>Quyền</th>
+                <th>Hoạt động</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody id="staffTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Info -->
+    <div class="text-center mt-2" id="paginationInfo"></div>
+
+    <div class="d-flex justify-content-center mt-3">
+        <ul class="pagination" id="pagination"></ul>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/fontawesome/js/all.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/staff/staff.js"></script>
+</body>
+</html>

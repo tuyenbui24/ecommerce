@@ -18,14 +18,12 @@ public class UserRestController {
         this.userService = userService;
     }
 
-    // Đăng ký người dùng mới
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody UserRegisterRequest request) {
         userService.register(request);
         return ResponseEntity.ok().build();
     }
 
-    // Danh sách người dùng (phân trang và tìm kiếm)
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsers(
             @RequestParam(defaultValue = "1") int page,
@@ -33,13 +31,11 @@ public class UserRestController {
         return ResponseEntity.ok(userService.listByPageU(page, keyword).getContent());
     }
 
-    // Lấy chi tiết người dùng theo ID
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.findDtoById(id));
     }
 
-    // Kiểm tra email có duy nhất không (dùng khi tạo/sửa)
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmailUnique(
             @RequestParam Integer id,
@@ -48,7 +44,6 @@ public class UserRestController {
         return ResponseEntity.ok(isUnique);
     }
 
-    // Cập nhật thông tin người dùng
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUser(
             @PathVariable Integer id,
@@ -59,7 +54,6 @@ public class UserRestController {
         return ResponseEntity.noContent().build();
     }
 
-    // Xoá người dùng theo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteById(id);

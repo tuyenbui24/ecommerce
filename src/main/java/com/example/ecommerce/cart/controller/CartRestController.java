@@ -15,13 +15,11 @@ public class CartRestController {
         this.cartService = cartService;
     }
 
-    // ✅ Lấy giỏ hàng của user theo ID
     @GetMapping("/{userId}")
     public ResponseEntity<CartDTO> getCartByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(cartService.getCartByUserId(userId));
     }
 
-    // ✅ Thêm sản phẩm vào giỏ hàng
     @PostMapping("/{userId}/add")
     public ResponseEntity<Void> addToCart(
             @PathVariable Integer userId,
@@ -31,14 +29,12 @@ public class CartRestController {
         return ResponseEntity.ok().build();
     }
 
-    // ✅ Xóa một item khỏi giỏ hàng
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<Void> removeItem(@PathVariable Integer itemId) {
         cartService.removeItem(itemId);
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ Cập nhật số lượng của 1 item trong giỏ hàng
     @PutMapping("/items/{itemId}")
     public ResponseEntity<Void> updateQuantity(
             @PathVariable Integer itemId,
