@@ -58,6 +58,23 @@
             </select>
         </div>
 
+        <!-- Size và số lượng -->
+        <div class="mb-3">
+            <label class="form-label">Size và số lượng:</label>
+            <div class="row">
+                <div class="col-6" th:each="size : ${sizes}">
+                    <label>
+                        <input type="checkbox" th:name="sizeNames" th:value="${size}"
+                               th:checked="${#lists.contains(#ids(productSizes.?[size==size]), size)}"/>
+                        <span th:text="${size}"></span>
+                    </label>
+                    <input type="number" min="0" th:name="sizeQuantities"
+                           th:value="${productSizes.?[size==size].size() > 0 ? productSizes.?[size==size][0].quantity : 0}"
+                           class="form-control d-inline-block w-50" placeholder="Số lượng"/>
+                </div>
+            </div>
+        </div>
+
         <!-- Ảnh -->
         <div class="mb-3">
             <label class="form-label">Ảnh sản phẩm:</label>

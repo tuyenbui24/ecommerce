@@ -1,9 +1,13 @@
 package com.example.ecommerce.product.mapper;
 
+import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
 import com.example.ecommerce.product.dto.ProductDTO;
-import com.example.ecommerce.category.entity.Category;
+import com.example.ecommerce.product.dto.ProductSizeDTO;
 import com.example.ecommerce.product.entity.Product;
+import com.example.ecommerce.product.entity.ProductSize;
+
+import java.util.List;
 
 public class ProductMapper {
 
@@ -18,6 +22,7 @@ public class ProductMapper {
         dto.setDescription(product.getDescription());
         dto.setImage(product.getImage());
         dto.setEnabled(product.isEnabled());
+        dto.setSizes(List.of());
 
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
@@ -41,5 +46,19 @@ public class ProductMapper {
                 .enabled(true)
                 .category(category)
                 .build();
+    }
+
+    public static ProductSizeDTO toSizeDTO(ProductSize size) {
+        if (size == null) return null;
+        ProductSizeDTO dto = new ProductSizeDTO();
+        dto.setId(size.getId());
+        dto.setSize(size.getSize());
+        dto.setQuantity(size.getQuantity());
+        return dto;
+    }
+
+    public static List<ProductSizeDTO> toSizeDTOList(List<ProductSize> sizes) {
+        return sizes == null ? List.of() :
+                sizes.stream().map(ProductMapper::toSizeDTO).toList();
     }
 }

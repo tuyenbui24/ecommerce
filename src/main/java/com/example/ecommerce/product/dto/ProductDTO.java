@@ -3,6 +3,7 @@ package com.example.ecommerce.product.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class ProductDTO {
@@ -16,5 +17,5 @@ public class ProductDTO {
     private Integer categoryId;
     private String categoryName;
     private String categorySlug;
-
+    private List<ProductSizeDTO> sizes;
 }

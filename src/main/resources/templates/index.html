@@ -55,6 +55,13 @@
                             <h6 class="card-title text-truncate" th:text="${product.name}" th:attr="title=${product.name}">Tên sản phẩm</h6>
                             <p class="text-danger fw-bold mb-0"
                                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 3, 'POINT')} + ' đ'">0 đ</p>
+                            <p>
+                                Size:
+                                <span th:each="size, sizeStat : ${product.sizes}">
+                                    <span th:text="${size.size}"></span> (<span th:text="${size.quantity}"></span>)
+                                    <span th:if="${!sizeStat.last}">, </span>
+                                </span>
+                            </p>
                         </div>
                     </a>
                     <div class="card-footer border-0 bg-white px-2 pb-3 mt-auto">

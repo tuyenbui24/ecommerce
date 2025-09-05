@@ -55,6 +55,7 @@
                 <th>Số lượng</th>
                 <th>Danh mục</th>
                 <th>Trạng thái</th>
+                <th>Size (SL)</th>
                 <th>Thao tác</th>
             </tr>
             </thead>
@@ -81,6 +82,12 @@
                     <a th:if="${!product.enabled}" th:href="@{'/products/' + ${product.id} + '/enabled/true'}">
                         <i class="fa-solid fa-xmark text-danger"></i>
                     </a>
+                </td>
+                <td>
+                    <span th:each="size : ${product.sizes}">
+                        <span th:text="${size.size}"></span> (<span th:text="${size.quantity}"></span>)
+                        <span th:if="${!sizeStat.last}">, </span>
+                    </span>
                 </td>
                 <td>
                     <a th:href="@{'/products/edit/' + ${product.id}}" class="text-warning me-2">

@@ -7,6 +7,7 @@ import com.example.ecommerce.config.exception.ProductNotFoundExp;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
 import com.example.ecommerce.product.dto.ProductDTO;
 import com.example.ecommerce.product.service.ProductService;
+import com.example.ecommerce.product.service.ProductSizeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -23,10 +24,12 @@ public class ProductController {
 
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final ProductSizeService productSizeService;
 
-    public ProductController(ProductService productService, CategoryService categoryService) {
+    public ProductController(ProductService productService, CategoryService categoryService, ProductSizeService productSizeService) {
         this.productService = productService;
         this.categoryService = categoryService;
+        this.productSizeService = productSizeService;
     }
 
     @GetMapping
@@ -56,12 +59,15 @@ public class ProductController {
         model.addAttribute("product", request);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("pageTitle", "Create New Product");
+        model.addAttribute("sizes", List.of("S", "M", "L", "XL")); // hoặc lấy từ DB nếu muốn động
         return "product_form";
     }
 
     @PostMapping("/save")
     public String saveProduct(@ModelAttribute("product") ProductCreateRequest request,
                               @RequestParam("imageFile") MultipartFile imageFile,
+                              @RequestParam(value = "sizeNames", required = false) List<String> sizeNames,
+                              @RequestParam(value = "sizeQuantities", required = false) List<Integer> sizeQuantities,
                               RedirectAttributes ra) throws IOException {
 
         if (!productService.isProductNameUnique(request.getId(), request.getName())) {
@@ -78,6 +84,13 @@ public class ProductController {
         }
 
         ProductDTO saved = productService.save(request);
+
+        // Lưu size cho sản phẩm
+        if (sizeNames != null && sizeQuantities != null) {
+            for (int i = 0; i < sizeNames.size(); i++) {
+                productSizeService.addOrUpdateSize(saved.getId(), sizeNames.get(i), sizeQuantities.get(i));
+            }
+        }
 
         if (!imageFile.isEmpty()) {
             String uploadDir = "product-image/" + saved.getId();
@@ -109,6 +122,9 @@ public class ProductController {
             model.addAttribute("product", request);
             model.addAttribute("categoryList", categoryList);
             model.addAttribute("pageTitle", "Edit Product");
+            model.addAttribute("sizes", List.of("S", "M", "L", "XL"));
+            // Lấy danh sách size hiện có của sản phẩm
+            model.addAttribute("productSizes", productSizeService.getSizesByProduct(id));
             return "product_form";
 
         } catch (ProductNotFoundExp e) {
