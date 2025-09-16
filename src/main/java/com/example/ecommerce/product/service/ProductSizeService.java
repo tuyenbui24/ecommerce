@@ -7,10 +7,13 @@ import com.example.ecommerce.product.entity.ProductSize;
 import com.example.ecommerce.product.mapper.ProductMapper;
 import com.example.ecommerce.product.repository.ProductRepository;
 import com.example.ecommerce.product.repository.ProductSizeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductSizeService {
 
@@ -54,26 +57,31 @@ public class ProductSizeService {
         return ProductMapper.toSizeDTO(updated);
     }
 
-    public void deleteSize(Integer sizeId) {
-        sizeRepo.deleteById(sizeId);
+    @Transactional
+    public void deleteSize(Integer id) {
+        int rows = sizeRepo.hardDeleteById(id);
+        if (rows == 0) throw new RuntimeException("Không tìm thấy size với ID: " + id);
+        log.info("Deleted product_size id={} (rows={})", id, rows);
+        sizeRepo.flush();
     }
 
-    public void addOrUpdateSize(Integer productId, String size, Integer quantity) {
-        var sizes = sizeRepo.findByProduct_Id(productId);
-        for (var s : sizes) {
-            if (s.getSize().equals(size)) {
-                s.setQuantity(quantity);
-                sizeRepo.save(s);
-                return;
-            }
-        }
-        // Nếu chưa có thì thêm mới
-        Product product = productRepo.findById(productId).orElseThrow();
-        ProductSize newSize = ProductSize.builder()
-                .size(size)
-                .quantity(quantity)
-                .product(product)
-                .build();
-        sizeRepo.save(newSize);
-    }
+
+//    public void addOrUpdateSize(Integer productId, String size, Integer quantity) {
+//        var sizes = sizeRepo.findByProduct_Id(productId);
+//        for (var s : sizes) {
+//            if (s.getSize().equals(size)) {
+//                s.setQuantity(quantity);
+//                sizeRepo.save(s);
+//                return;
+//            }
+//        }
+//        // Nếu chưa có thì thêm mới
+//        Product product = productRepo.findById(productId).orElseThrow();
+//        ProductSize newSize = ProductSize.builder()
+//                .size(size)
+//                .quantity(quantity)
+//                .product(product)
+//                .build();
+//        sizeRepo.save(newSize);
+//    }
 }

@@ -8,7 +8,10 @@ import com.example.ecommerce.order.entity.OrderItem;
 import com.example.ecommerce.order.entity.OrderStatus;
 import com.example.ecommerce.order.mapper.OrderMapper;
 import com.example.ecommerce.order.repo.OrderRepository;
+import com.example.ecommerce.product.entity.Product;
+import com.example.ecommerce.product.entity.ProductSize;
 import com.example.ecommerce.product.repository.ProductRepository;
+import com.example.ecommerce.product.repository.ProductSizeRepository;
 import com.example.ecommerce.user.repo.UserRepository;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -25,13 +28,16 @@ public class OrderService {
     private final CartRepository cartRepo;
     private final ProductRepository productRepo;
     private final UserRepository userRepo;
+    private final ProductSizeRepository productSizeRepository;
 
     public OrderService(OrderRepository orderRepo, CartRepository cartRepo,
-                        ProductRepository productRepo, UserRepository userRepo) {
+                        ProductRepository productRepo, UserRepository userRepo,
+                        ProductSizeRepository productSizeRepository) {
         this.orderRepo = orderRepo;
         this.cartRepo = cartRepo;
         this.productRepo = productRepo;
         this.userRepo = userRepo;
+        this.productSizeRepository = productSizeRepository;
     }
 
     public static final int ITEM_IN_PAGE = 5;
@@ -40,6 +46,10 @@ public class OrderService {
     public OrderDTO createOrder(Integer userId, String shippingAddress, String note) {
         Cart cart = cartRepo.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        if (cart.getItems().isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống");
+        }
 
         Order order = new Order();
         order.setUser(cart.getUser());
@@ -50,24 +60,48 @@ public class OrderService {
 
         List<OrderItem> items = cart.getItems().stream().map(ci -> {
             OrderItem oi = new OrderItem();
+            oi.setOrder(order);
             oi.setProduct(ci.getProduct());
             oi.setQuantity(ci.getQuantity());
             oi.setPrice(ci.getProduct().getPrice());
-            oi.setOrder(order);
+            oi.setSize(ci.getSize());
             return oi;
         }).toList();
 
         order.setItems(items);
-        order.setTotalPrice(items.stream()
+
+        for (OrderItem oi : items) {
+            Integer pId = oi.getProduct().getId();
+
+            ProductSize ps = productSizeRepository
+                    .findByProduct_IdAndSizeIgnoreCase(pId, oi.getSize())
+                    .orElseThrow(() -> new RuntimeException("Size không tồn tại trong kho"));
+
+            if (ps.getQuantity() < oi.getQuantity()) {
+                throw new RuntimeException("Không đủ tồn kho size " + oi.getSize());
+            }
+
+            ps.setQuantity(ps.getQuantity() - oi.getQuantity());
+            productSizeRepository.save(ps);
+
+            Integer sum = productSizeRepository.sumQuantityByProductId(pId);
+            Product p = oi.getProduct();
+            p.setQuantity(sum);
+            productRepo.save(p);
+        }
+
+        BigDecimal total = items.stream()
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setTotalPrice(total);
+
+        orderRepo.save(order);
 
         cart.getItems().clear();
         cartRepo.save(cart);
-        orderRepo.save(order);
+
         return OrderMapper.toDTO(order);
     }
-
 
     @Transactional(readOnly = true)
     public List<OrderDTO> getOrderHistory(Integer userId) {
@@ -109,5 +143,29 @@ public class OrderService {
 
         return new PageImpl<>(dtos, pageable, orderPage.getTotalElements());
     }
+
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> getUserOrdersPaged(Integer userId, int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum - 1, ITEM_IN_PAGE, Sort.by("orderTime").descending());
+        Page<Order> orderPage = orderRepo.findByUserId(userId, pageable);
+
+        List<OrderDTO> dtos = orderPage.getContent()
+                .stream().map(OrderMapper::toDTO).toList();
+
+        return new PageImpl<>(dtos, pageable, orderPage.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public OrderDTO getOrderOfUser(Integer userId, Integer orderId) {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Không có quyền xem đơn hàng này");
+        }
+
+        return OrderMapper.toDTO(order);
+    }
+
 }
 

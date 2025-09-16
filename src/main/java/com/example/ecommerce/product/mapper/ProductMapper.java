@@ -11,6 +11,19 @@ import java.util.List;
 
 public class ProductMapper {
 
+    private static String toDisplaySize(String raw) {
+        if (raw == null) return null;
+        String s = raw.trim().toUpperCase();
+        return switch (s) {
+            case "1" -> "S";
+            case "2" -> "M";
+            case "3" -> "L";
+            case "4" -> "XL";
+            case "5" -> "XXL";
+            default -> s;
+        };
+    }
+
     public static ProductDTO toDTO(Product product) {
         if (product == null) return null;
 
@@ -52,7 +65,7 @@ public class ProductMapper {
         if (size == null) return null;
         ProductSizeDTO dto = new ProductSizeDTO();
         dto.setId(size.getId());
-        dto.setSize(size.getSize());
+        dto.setSize(toDisplaySize(size.getSize()));
         dto.setQuantity(size.getQuantity());
         return dto;
     }

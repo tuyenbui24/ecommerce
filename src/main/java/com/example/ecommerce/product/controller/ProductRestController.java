@@ -1,14 +1,19 @@
 package com.example.ecommerce.product.controller;
 
 import com.example.ecommerce.category.entity.Category;
+import com.example.ecommerce.config.FileUpload;
 import com.example.ecommerce.config.exception.ProductNotFoundExp;
 import com.example.ecommerce.product.dto.ProductCreateRequest;
 import com.example.ecommerce.product.dto.ProductDTO;
+import com.example.ecommerce.product.entity.Product;
+import com.example.ecommerce.product.repository.ProductRepository;
 import com.example.ecommerce.product.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +22,11 @@ import java.util.Map;
 public class ProductRestController {
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
-    public ProductRestController(ProductService productService) {
+    public ProductRestController(ProductService productService, ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping("/all")
@@ -30,13 +37,22 @@ public class ProductRestController {
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> listProducts(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(required = false) String keyword) {
-        return ResponseEntity.ok(productService.listByPage(page, keyword));
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer categoryId) {
+        return ResponseEntity.ok(productService.listByPage(page, keyword, categoryId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer id) throws ProductNotFoundExp {
         return ResponseEntity.ok(productService.getDtoById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer id,
+                                                    @RequestBody ProductCreateRequest req) {
+        req.setId(id);
+        ProductDTO dto = productService.save(req);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
@@ -57,7 +73,6 @@ public class ProductRestController {
         return ResponseEntity.noContent().build();
     }
 
-    // Kiểm tra tên sản phẩm có duy nhất không
     @GetMapping("/check-name")
     public ResponseEntity<Boolean> checkProductNameUnique(
             @RequestParam Integer id,
@@ -70,7 +85,6 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.findAllCategory());
     }
 
-    // Lấy sản phẩm theo danh mục (có phân trang)
     @GetMapping("/category")
     public ResponseEntity<Page<ProductDTO>> listByCategory(
             @RequestParam String categoryName,
@@ -78,10 +92,30 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.listByCategory(categoryName, page));
     }
 
-    // Lấy sản phẩm theo từng danh mục (giới hạn số lượng mỗi loại)
     @GetMapping("/by-category")
     public ResponseEntity<Map<String, List<ProductDTO>>> getProductsByCategory(
             @RequestParam(defaultValue = "4") int num) {
         return ResponseEntity.ok(productService.getProductsByCategory(num));
+    }
+
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<Void> uploadImage(@PathVariable Integer id,
+                                            @RequestParam("file") MultipartFile file) throws IOException {
+        Product product = productService.getEntityById(id);
+
+
+        String filename = file.getOriginalFilename();
+        String uploadDir = "product-image/" + id;
+
+
+        FileUpload.cleanDir(uploadDir);
+        FileUpload.saveFile(uploadDir, filename, file);
+
+
+        product.setImage(filename);
+        productRepository.save(product);
+
+
+        return ResponseEntity.ok().build();
     }
 }

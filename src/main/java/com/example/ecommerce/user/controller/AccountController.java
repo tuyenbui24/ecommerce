@@ -56,6 +56,7 @@ public class AccountController {
                 return "redirect:/account";
             }
 
+            assert newPassword != null;
             if (!newPassword.equals(confirmPassword)) {
                 ra.addFlashAttribute("error", "Mật khẩu mới và xác nhận không trùng khớp!");
                 return "redirect:/account";

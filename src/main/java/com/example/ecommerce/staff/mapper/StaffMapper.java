@@ -6,6 +6,8 @@ import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 
+import java.util.List;
+
 public class StaffMapper {
 
     public static StaffDTO toDTO(Staff staff) {
@@ -20,12 +22,11 @@ public class StaffMapper {
         dto.setPhotoPath(staff.getPhotos());
         dto.setEnabled(staff.isEnabled());
 
+        var roles = staff.getRoles();
         dto.setRoles(
-                staff.getRoles().stream()
-                        .map(RoleMapper::toDTO)
-                        .toList()
+                roles == null ? List.of()
+                        : roles.stream().map(RoleMapper::toDTO).toList()
         );
-
         return dto;
     }
 

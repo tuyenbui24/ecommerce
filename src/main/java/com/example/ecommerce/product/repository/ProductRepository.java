@@ -26,6 +26,20 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p where concat(p.id, ' ', p.name, ' ', p.price, ' ', p.quantity) like %?1%")
     Page<Product> searchP(String keyword, Pageable pageable);
 
+    @Query("select p from Product p where p.category.id = :catId")
+    Page<Product> findPageByCategoryId(@Param("catId") Integer categoryId, Pageable pageable);
+
+    @Query("""
+           select p from Product p
+           where (:kw is null or :kw = '' or
+                  concat(p.id, ' ', p.name, ' ', p.price, ' ', p.quantity) like %:kw%)
+             and (:catId is null or p.category.id = :catId)
+           """)
+    Page<Product> searchByKeywordAndCategory(@Param("kw") String keyword,
+                                             @Param("catId") Integer categoryId,
+                                             Pageable pageable);
+
     List<Product> findByCategory_Id(Integer categoryId, Pageable pageable);
     Page<Product> findByCategory_Name(String name, Pageable pageable);
+    long countByCategory_Id(Integer categoryId);
 }

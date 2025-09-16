@@ -2,12 +2,13 @@ package com.example.ecommerce.staff.controller;
 
 import com.example.ecommerce.config.FileUpload;
 import com.example.ecommerce.config.exception.UserNotFoundExp;
-import com.example.ecommerce.role.entity.Role;
+import com.example.ecommerce.role.dto.RoleDTO;
 import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 import com.example.ecommerce.staff.mapper.StaffMapper;
 import com.example.ecommerce.staff.service.StaffService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/staffs")
 public class StaffRestController {
@@ -34,17 +36,22 @@ public class StaffRestController {
     public ResponseEntity<Map<String, Object>> getStaffList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "") String keyword) {
+        try {
+            Page<StaffDTO> staffPage = staffService.listStaffDTOByPage(page, keyword);
 
-        Page<StaffDTO> staffPage = staffService.listStaffDTOByPage(page, keyword);
+            Map<String, Object> res = new HashMap<>();
+            res.put("data", staffPage.getContent());
+            res.put("currentPage", page);
+            res.put("totalItems", staffPage.getTotalElements());
+            res.put("totalPages", staffPage.getTotalPages());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", staffPage.getContent());
-        response.put("currentPage", page);
-        response.put("totalItems", staffPage.getTotalElements());
-        response.put("totalPages", staffPage.getTotalPages());
-
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(res);
+        } catch (Exception ex) {
+            log.error("GET /api/staffs failed: page={}, keyword='{}'", page, keyword, ex);
+            throw ex;
+        }
     }
+
 
 //    @GetMapping
 //    public ResponseEntity<Map<String, Object>> getStaffList(
@@ -111,8 +118,8 @@ public class StaffRestController {
 //    }
 
     @GetMapping("/roles")
-    public ResponseEntity<List<Role>> getAllRoles() {
-        return ResponseEntity.ok(staffService.findAllRoles());
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
+        return ResponseEntity.ok(staffService.findAllRolesDTO());
     }
 
     @PostMapping
@@ -123,7 +130,7 @@ public class StaffRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<StaffDTO> updateStaff(@PathVariable Integer id, @RequestBody StaffCreateRequest request) {
-        request.setId(id); // nếu có setter
+        request.setId(id);
         StaffDTO saved = staffService.save(request);
         return ResponseEntity.ok(saved);
     }

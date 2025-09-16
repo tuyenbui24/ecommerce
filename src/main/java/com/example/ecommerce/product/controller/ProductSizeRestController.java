@@ -3,11 +3,14 @@ package com.example.ecommerce.product.controller;
 import com.example.ecommerce.product.dto.ProductSizeCreateRequest;
 import com.example.ecommerce.product.dto.ProductSizeDTO;
 import com.example.ecommerce.product.service.ProductSizeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/product-sizes")
 public class ProductSizeRestController {
@@ -18,7 +21,7 @@ public class ProductSizeRestController {
         this.sizeService = sizeService;
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/by-product/{productId}")
     public ResponseEntity<List<ProductSizeDTO>> getSizes(@PathVariable Integer productId) {
         return ResponseEntity.ok(sizeService.getSizesByProduct(productId));
     }
@@ -37,8 +40,9 @@ public class ProductSizeRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSize(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, Object>> deleteSize(@PathVariable Integer id) {
         sizeService.deleteSize(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("deleted", true, "id", id));
     }
+
 }

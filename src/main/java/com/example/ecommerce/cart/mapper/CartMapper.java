@@ -16,16 +16,12 @@ public class CartMapper {
         CartDTO dto = new CartDTO();
         dto.setId(cart.getId());
         dto.setUserId(cart.getUser().getId());
-        dto.setItems(cart.getItems()
-                .stream()
-                .map(CartMapper::toDTO)
-                .collect(Collectors.toList()));
+        dto.setItems(cart.getItems().stream().map(CartMapper::toDTO).collect(Collectors.toList()));
         return dto;
     }
 
     public static CartItemDTO toDTO(CartItem item) {
         if (item == null) return null;
-
         CartItemDTO dto = new CartItemDTO();
         dto.setId(item.getId());
         dto.setProductId(item.getProduct().getId());
@@ -33,6 +29,7 @@ public class CartMapper {
         dto.setProductPrice(item.getProduct().getPrice());
         dto.setQuantity(item.getQuantity());
         dto.setImage(item.getProduct().getImage());
+        dto.setSize(item.getSize());
         return dto;
     }
 
@@ -42,12 +39,12 @@ public class CartMapper {
         return cart;
     }
 
-    public static CartItem toEntity(CartItemDTO dto, Cart cart, Product product) {
+    public static CartItem toEntity(String size, int quantity, Cart cart, Product product) {
         CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
-        item.setQuantity(dto.getQuantity());
+        item.setSize(size);
+        item.setQuantity(quantity);
         return item;
     }
 }
-

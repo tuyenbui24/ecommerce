@@ -3,9 +3,14 @@ package com.example.ecommerce.category.service;
 import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.category.repository.CategoryRepository;
 import com.example.ecommerce.config.SlugUtil;
+import com.example.ecommerce.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +21,12 @@ public class CategoryService {
     public static final int CATEGORY_PER_PAGE = 10;
 
     private final CategoryRepository categoryRepo;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepo) {
+    public CategoryService(CategoryRepository categoryRepo, ProductRepository productRepository) {
         this.categoryRepo = categoryRepo;
+        this.productRepository = productRepository;
     }
 
     public List<Category> listAll() {
@@ -56,9 +63,14 @@ public class CategoryService {
         return category;
     }
 
+    @Transactional
     public void delete(Integer id) {
         if (!categoryRepo.existsById(id)) {
             throw new IllegalArgumentException("Không tìm thấy danh mục có ID: " + id);
+        }
+        long count = productRepository.countByCategory_Id(id);
+        if (count > 0) {
+            throw new IllegalStateException("Không thể xoá: còn " + count + " sản phẩm thuộc danh mục này.");
         }
         categoryRepo.deleteById(id);
     }

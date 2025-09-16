@@ -43,12 +43,20 @@ public class ProductService {
                 .toList();
     }
 
-    public Page<ProductDTO> listByPage(int pageNum, String keyword) {
+    public Page<ProductDTO> listByPage(int pageNum, String keyword, Integer categoryId) {
         Pageable pageable = PageRequest.of(pageNum - 1, PRODUCT_PER_PAGE, Sort.by("name").ascending());
+
         Page<Product> page;
 
-        if (keyword != null && !keyword.isBlank()) {
+        boolean hasKw = (keyword != null && !keyword.isBlank());
+        boolean hasCat = (categoryId != null);
+
+        if (hasKw && hasCat) {
+            page = productRepository.searchByKeywordAndCategory(keyword, categoryId, pageable);
+        } else if (hasKw) {
             page = productRepository.searchP(keyword, pageable);
+        } else if (hasCat) {
+            page = productRepository.findPageByCategoryId(categoryId, pageable);
         } else {
             page = productRepository.findAll(pageable);
         }
@@ -56,6 +64,7 @@ public class ProductService {
         List<ProductDTO> dtos = page.map(ProductMapper::toDTO).toList();
         return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
+
 
     public List<Category> findAllCategory() {
         return categoryRepository.findAll();

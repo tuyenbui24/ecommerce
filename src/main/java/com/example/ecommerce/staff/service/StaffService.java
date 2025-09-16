@@ -1,16 +1,22 @@
 package com.example.ecommerce.staff.service;
 
 import com.example.ecommerce.config.exception.UserNotFoundExp;
+import com.example.ecommerce.role.dto.RoleDTO;
 import com.example.ecommerce.role.entity.Role;
+import com.example.ecommerce.role.mapper.RoleMapper;
 import com.example.ecommerce.role.repository.RoleRepository;
 import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 import com.example.ecommerce.staff.mapper.StaffMapper;
 import com.example.ecommerce.staff.repository.StaffRepository;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -30,6 +36,7 @@ public class StaffService {
         this.encoder = encoder;
     }
 
+    @Transactional(readOnly = true)
     public Page<StaffDTO> listStaffDTOByPage(int pageNum, String keyword) {
         Pageable pageable = PageRequest.of(pageNum - 1, STAFFS_IN_PAGE, Sort.by("lastName").ascending());
         Page<Staff> staffPage = (keyword == null || keyword.isBlank())
@@ -38,8 +45,10 @@ public class StaffService {
         return staffPage.map(StaffMapper::toDTO);
     }
 
-    public List<Role> findAllRoles() {
-        return roleRepo.findAll();
+    @Transactional(readOnly = true)
+    public List<RoleDTO> findAllRolesDTO() {
+        return roleRepo.findAll(Sort.by("name"))
+                .stream().map(RoleMapper::toDTO).toList();
     }
 
     public StaffDTO save(StaffCreateRequest request) {

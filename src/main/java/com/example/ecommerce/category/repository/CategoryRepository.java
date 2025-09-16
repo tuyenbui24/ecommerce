@@ -11,6 +11,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     Category findBySlug(String slug);
 
-    @Query("select c from Category c where c.name like %?1%")
+    @Query("select c from Category c where lower(c.name) like lower(concat('%', ?1, '%'))")
     Page<Category> searchC(String keyword, Pageable pageable);
+
 }

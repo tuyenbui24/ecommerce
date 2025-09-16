@@ -26,4 +26,7 @@ public class OrderItem {
 
     private int quantity;
     private BigDecimal price;
+
+    @Column(length = 10)
+    private String size;
 }

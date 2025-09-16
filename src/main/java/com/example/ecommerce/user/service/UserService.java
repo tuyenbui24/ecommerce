@@ -1,10 +1,10 @@
-
 package com.example.ecommerce.user.service;
 
 import com.example.ecommerce.config.exception.UserNotFoundExp;
 import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.repository.RoleRepository;
 import com.example.ecommerce.user.dto.UserDTO;
+import com.example.ecommerce.user.dto.UserProfileUpdateRequest;
 import com.example.ecommerce.user.dto.UserRegisterRequest;
 import com.example.ecommerce.user.entity.User;
 import com.example.ecommerce.user.mapper.UserMapper;
@@ -95,9 +95,36 @@ public class UserService {
 
         userRepo.save(user);
     }
+
     public void deleteById(Integer id) throws UsernameNotFoundException {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new UserNotFoundExp("Could not find any user with ID " + id));
         userRepo.delete(user);
+    }
+
+    public void updateUserProfile(Integer userId, UserProfileUpdateRequest req) {
+        User user = getById(userId);
+
+        if (req.getEmail() != null && !req.getEmail().isBlank() && !user.getEmail().equals(req.getEmail())) {
+            if (userRepo.existsByEmail(req.getEmail())) {
+                throw new IllegalArgumentException("Email đã tồn tại!");
+            }
+            user.setEmail(req.getEmail());
+        }
+
+        if (req.getFirstName() != null) user.setFirstName(req.getFirstName());
+        if (req.getLastName()  != null) user.setLastName(req.getLastName());
+        userRepo.save(user);
+    }
+
+    public void updatePassword(Integer userId, String newPassword) {
+        User user = getById(userId);
+        user.setPassword(encoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+    public Integer findIdByUsername(String username) {
+        return userRepo.findIdByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

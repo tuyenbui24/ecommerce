@@ -23,6 +23,7 @@ public class OrderMapper {
                     itemDTO.setQuantity(item.getQuantity());
                     itemDTO.setImage(item.getProduct().getImage());
                     itemDTO.setProductId(item.getProduct().getId());
+                    itemDTO.setSize(item.getSize());
                     return itemDTO;
                 }).toList());
         return dto;

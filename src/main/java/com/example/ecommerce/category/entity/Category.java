@@ -1,6 +1,7 @@
 package com.example.ecommerce.category.entity;
 
 import com.example.ecommerce.product.entity.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,7 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String slug;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<Product> products = new HashSet<>();
 
