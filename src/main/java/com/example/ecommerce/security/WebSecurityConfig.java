@@ -71,8 +71,14 @@ public class WebSecurityConfig {
                         .requestMatchers("/products/**", "/error").permitAll()
                         .requestMatchers("/api/products/**", "/api/categories/**").permitAll()
                         .requestMatchers("/product-image/**", "/staff-photos/**").permitAll()
-                        .requestMatchers("/api/users/me/**", "/api/cart/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/product-sizes/**").permitAll()
+
+//                        .requestMatchers("/api/payments/vnpay/ipn").permitAll()
+                                .requestMatchers("/api/payments/vnpay/return",
+                                        "/api/payments/vnpay/pay-again/**",
+                                        "/api/payments/vnpay/create").permitAll()
+
+                        .requestMatchers("/api/users/me/**", "/api/cart/**").hasRole("USER")
                         .requestMatchers("/api/product-sizes/**").hasRole("ADMIN")
                         .requestMatchers("/api/staffs/**", "/api/users/**",
                                 "/api/categories/**").hasRole("ADMIN")

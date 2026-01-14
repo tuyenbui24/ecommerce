@@ -1,6 +1,8 @@
 package com.example.ecommerce.user.service;
 
+import com.example.ecommerce.cart.repo.CartRepository;
 import com.example.ecommerce.config.exception.UserNotFoundExp;
+import com.example.ecommerce.order.repo.OrderRepository;
 import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.repository.RoleRepository;
 import com.example.ecommerce.user.dto.UserDTO;
@@ -23,11 +25,16 @@ public class UserService {
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
     private final PasswordEncoder encoder;
+    private final OrderRepository orderRepo;
+    private final CartRepository cartRepo;
 
-    public UserService(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepo, RoleRepository roleRepo,
+                       PasswordEncoder encoder, OrderRepository orderRepo, CartRepository cartRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.encoder = encoder;
+        this.orderRepo = orderRepo;
+        this.cartRepo = cartRepo;
     }
 
     @Transactional
@@ -64,11 +71,11 @@ public class UserService {
     public UserDTO findDtoById(Integer id) {
         return userRepo.findById(id)
                 .map(UserMapper::toDTO)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với ID: " + id));
     }
 
     public User getById(Integer id) {
-        return userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
     }
 
     public boolean checkPassword(User user, String rawPassword) {
@@ -98,7 +105,15 @@ public class UserService {
 
     public void deleteById(Integer id) throws UsernameNotFoundException {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundExp("Could not find any user with ID " + id));
+                .orElseThrow(() -> new UserNotFoundExp("Khng tìm thấy người dùng vs ID: " + id));
+        if (orderRepo.existsByUser_Id(id)) {
+            throw new IllegalStateException("Không thể xoá: người dùng đã có đơn hàng.");
+        }
+        cartRepo.findByUserId(id).ifPresent(cartRepo::delete);
+
+        user.getRoles().clear();
+        userRepo.save(user);
+
         userRepo.delete(user);
     }
 
@@ -125,6 +140,17 @@ public class UserService {
 
     public Integer findIdByUsername(String username) {
         return userRepo.findIdByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng: " + username));
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findForExport(String keyword) {
+        Pageable pageable = Pageable.unpaged();
+
+        Page<User> page = (keyword == null || keyword.isBlank())
+                ? userRepo.findAll(pageable)
+                : userRepo.search(keyword, pageable);
+
+        return page.getContent();
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-// UserMeRestController
 @RestController
 @RequestMapping("/api/users/me")
 public class UserMeRestController {

@@ -39,7 +39,7 @@ public class StaffAuthController {
             );
 
             Staff staff = staffRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Khng tìm thấy Nhân viên hoặc Quản lý"));
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản Quản lý"));
 
             String token = jwtUtil.generateToken(staff.getEmail());
 

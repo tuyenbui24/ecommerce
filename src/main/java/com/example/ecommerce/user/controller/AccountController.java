@@ -63,7 +63,7 @@ public class AccountController {
             }
         }
         userService.updateUserInfo(dto, newPassword);
-        ra.addFlashAttribute("message", "✅ Cập nhật thành công");
+        ra.addFlashAttribute("message", "Cập nhật thành công");
         return "redirect:/account";
     }
 }

@@ -26,7 +26,6 @@ public class ProductSizeRestController {
         return ResponseEntity.ok(sizeService.getSizesByProduct(productId));
     }
 
-    // Thêm size mới cho product
     @PostMapping
     public ResponseEntity<ProductSizeDTO> addSize(@RequestBody ProductSizeCreateRequest request) {
         return ResponseEntity.ok(sizeService.addSize(request));

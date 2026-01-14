@@ -3,8 +3,10 @@ package com.example.ecommerce.security.auth;
 import com.example.ecommerce.role.entity.Role;
 import com.example.ecommerce.role.repository.RoleRepository;
 import com.example.ecommerce.security.jwt.JwtUtil;
+import com.example.ecommerce.staff.repository.StaffRepository;
 import com.example.ecommerce.user.entity.User;
 import com.example.ecommerce.user.repo.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,17 +28,20 @@ public class UserAuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final StaffRepository staffRepository;
 
     public UserAuthController(AuthenticationManager authenticationManager,
                               JwtUtil jwtUtil,
                               UserRepository userRepository,
                               PasswordEncoder passwordEncoder,
-                              RoleRepository roleRepository) {
+                              RoleRepository roleRepository,
+                              StaffRepository staffRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.staffRepository = staffRepository;
     }
 
     @PostMapping("/login")
@@ -47,7 +52,7 @@ public class UserAuthController {
             );
 
             User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
             String token = jwtUtil.generateToken(user.getEmail());
 
@@ -65,13 +70,22 @@ public class UserAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        String rawEmail = request.getEmail();
+        String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
+
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email không được để trống");
+        }
+
+        if (userRepository.existsByEmail(email)
+                || staffRepository.existsByEmail(email)
+        ) {
             return ResponseEntity.badRequest().body("Email đã được sử dụng");
         }
 
         User user = new User();
-        user.setEmail(request.getEmail());
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

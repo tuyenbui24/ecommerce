@@ -2,12 +2,14 @@ package com.example.ecommerce.staff.controller;
 
 import com.example.ecommerce.config.FileUpload;
 import com.example.ecommerce.config.exception.UserNotFoundExp;
+import com.example.ecommerce.export.StaffCsvExporter;
 import com.example.ecommerce.role.dto.RoleDTO;
 import com.example.ecommerce.staff.dto.StaffCreateRequest;
 import com.example.ecommerce.staff.dto.StaffDTO;
 import com.example.ecommerce.staff.entity.Staff;
 import com.example.ecommerce.staff.mapper.StaffMapper;
 import com.example.ecommerce.staff.service.StaffService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +49,7 @@ public class StaffRestController {
 
             return ResponseEntity.ok(res);
         } catch (Exception ex) {
-            log.error("GET /api/staffs failed: page={}, keyword='{}'", page, keyword, ex);
+            log.error("GET /api/staffs đã thất bại: page={}, keyword='{}'", page, keyword, ex);
             throw ex;
         }
     }
@@ -89,7 +91,7 @@ public class StaffRestController {
         FileUpload.cleanDir(uploadDir);
         FileUpload.saveFile(uploadDir, fileName, multipartFile);
 
-        return ResponseEntity.ok("Upload thành công");
+        return ResponseEntity.ok("Tải lên thành công");
     }
 
     //Lấy ảnh (nếu không public)
@@ -152,12 +154,22 @@ public class StaffRestController {
         return ResponseEntity.noContent().build();
     }
 
-    // Kiểm tra email có duy nhất không (dùng khi thêm/sửa nhân viên)
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmailUnique(
             @RequestParam Integer id,
             @RequestParam String email) {
         boolean isUnique = staffService.isEmailUnique(id, email);
         return ResponseEntity.ok(isUnique);
+    }
+
+    @GetMapping("/export")
+    public void exportStaffs(
+            @RequestParam(defaultValue = "") String keyword,
+            HttpServletResponse response
+    ) throws IOException {
+
+        var staffs = staffService.findForExport(keyword);
+        StaffCsvExporter exporter = new StaffCsvExporter();
+        exporter.export(staffs, response);
     }
 }

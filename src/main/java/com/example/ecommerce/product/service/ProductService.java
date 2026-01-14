@@ -2,6 +2,7 @@ package com.example.ecommerce.product.service;
 
 import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.category.repository.CategoryRepository;
+import com.example.ecommerce.config.exception.BadRequestException;
 import com.example.ecommerce.config.exception.CategoryNotFoundExp;
 import com.example.ecommerce.config.exception.ProductNotFoundExp;
 import com.example.ecommerce.order.entity.OrderItem;
@@ -43,26 +44,65 @@ public class ProductService {
                 .toList();
     }
 
-    public Page<ProductDTO> listByPage(int pageNum, String keyword, Integer categoryId) {
-        Pageable pageable = PageRequest.of(pageNum - 1, PRODUCT_PER_PAGE, Sort.by("name").ascending());
-
-        Page<Product> page;
+    public Page<ProductDTO> listByPage(int pageNum, int size, String keyword, Integer categoryId) {
+        int pageSize = (size > 0 ? size : PRODUCT_PER_PAGE);
+        Pageable pageable = PageRequest.of(
+                Math.max(pageNum - 1, 0),
+                pageSize,
+                Sort.by("name").ascending()
+        );
 
         boolean hasKw = (keyword != null && !keyword.isBlank());
         boolean hasCat = (categoryId != null);
 
+        Page<Product> page;
         if (hasKw && hasCat) {
             page = productRepository.searchByKeywordAndCategory(keyword, categoryId, pageable);
         } else if (hasKw) {
-            page = productRepository.searchP(keyword, pageable);
+            page = productRepository.findByNameContainingIgnoreCase(keyword.trim(), pageable);
+            // page = productRepository.searchP(keyword, pageable);
         } else if (hasCat) {
             page = productRepository.findPageByCategoryId(categoryId, pageable);
         } else {
             page = productRepository.findAll(pageable);
         }
 
-        List<ProductDTO> dtos = page.map(ProductMapper::toDTO).toList();
-        return new PageImpl<>(dtos, pageable, page.getTotalElements());
+        return page.map(ProductMapper::toDTO);
+    }
+
+    public Page<ProductDTO> listByPage(
+            int pageNum, int sizePage, String keyword,
+            Integer categoryId, String sizeFilter,
+            Integer minStock, Integer maxStock) {
+
+        Pageable pageable = PageRequest.of(
+                Math.max(pageNum - 1, 0),
+                sizePage > 0 ? sizePage : PRODUCT_PER_PAGE,
+                Sort.by("name").ascending()
+        );
+
+        boolean hasFilter = (sizeFilter != null || minStock != null || maxStock != null || categoryId != null || (keyword != null && !keyword.isBlank()));
+
+        Page<Product> page = hasFilter
+                ? productRepository.filterByStockRange(keyword, categoryId, sizeFilter, minStock, maxStock, pageable)
+                : productRepository.findAll(pageable);
+
+        return page.map(ProductMapper::toDTO);
+    }
+
+
+
+    public Map<String, List<ProductDTO>> getProductsByCategory(int num) {
+        List<Category> categories = categoryRepository.findAll(Sort.by("name"));
+        Map<String, List<ProductDTO>> categoryMap = new HashMap<>();
+        Pageable page = PageRequest.of(0, Math.max(num, 1), Sort.by("name"));
+
+        for (Category category : categories) {
+            Page<Product> productPage = productRepository.findByCategory_Id(category.getId(), page);
+            List<ProductDTO> dtoList = productPage.stream().map(ProductMapper::toDTO).toList();
+            categoryMap.put(category.getName(), dtoList);
+        }
+        return categoryMap;
     }
 
 
@@ -74,27 +114,47 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundExp("Không tìm thấy danh mục với ID: " + request.getCategoryId()));
 
-        Product product;
+        String newName = request.getName() == null ? "" : request.getName().trim();
+        if (newName.isEmpty()) {
+            throw new BadRequestException("Tên sản phẩm không được để trống");
+        }
 
+        Product product;
         if (request.getId() == null) {
+            if (productRepository.existsByNameIgnoreCase(newName)) {
+                throw new BadRequestException("Tên sản phẩm đã tồn tại");
+            }
             product = ProductMapper.toEntity(request, category);
+            product.setName(newName);
+            if (product.getImage() == null || product.getImage().isBlank()) {
+                product.setImage(Product.DEFAULT_IMAGE);
+            }
+            product.setEnabled(true);
         } else {
             product = productRepository.findById(request.getId())
                     .orElseThrow(() -> new ProductNotFoundExp("Không tìm thấy sản phẩm với ID: " + request.getId()));
 
-            product.setName(request.getName());
+            if (!product.getName().equalsIgnoreCase(newName)
+                    && productRepository.existsByNameIgnoreCase(newName)) {
+                throw new BadRequestException("Tên sản phẩm đã tồn tại");
+            }
+
+            product.setName(newName);
             product.setPrice(request.getPrice());
             product.setQuantity(request.getQuantity());
             product.setDescription(request.getDescription());
             product.setCategory(category);
-
-            if (request.getImage() != null && !request.getImage().isEmpty()) {
+            if (request.getImage() != null && !request.getImage().isBlank()) {
                 product.setImage(request.getImage());
             }
         }
 
-        Product saved = productRepository.save(product);
-        return ProductMapper.toDTO(saved);
+        try {
+            Product saved = productRepository.save(product);
+            return ProductMapper.toDTO(saved);
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            throw new BadRequestException("Tên sản phẩm đã tồn tại");
+        }
     }
 
     public ProductDTO getDtoById(Integer id) throws ProductNotFoundExp {
@@ -140,20 +200,6 @@ public class ProductService {
         return existingProduct == null || existingProduct.getId().equals(id);
     }
 
-    public Map<String, List<ProductDTO>> getProductsByCategory(int num) {
-        List<Category> categories = categoryRepository.findAll(Sort.by("name"));
-        Map<String, List<ProductDTO>> categoryMap = new HashMap<>();
-
-        for (Category category : categories) {
-            Pageable page = PageRequest.of(0, num, Sort.by("name"));
-            List<Product> productList = productRepository.findByCategory_Id(category.getId(), page);
-            List<ProductDTO> dtoList = productList.stream().map(ProductMapper::toDTO).toList();
-            categoryMap.put(category.getName(), dtoList);
-        }
-
-        return categoryMap;
-    }
-
     public Page<ProductDTO> listByCategory(String categoryName, int pageNum) {
         Pageable pageable = PageRequest.of(pageNum - 1, 8);
 
@@ -163,5 +209,30 @@ public class ProductService {
                 .toList();
 
         return new PageImpl<>(dtoList, pageable, productPage.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> findForExport(
+            String keyword,
+            Integer categoryId,
+            String sizeFilter,
+            Integer minStock,
+            Integer maxStock
+    ) {
+        Pageable pageable = Pageable.unpaged();
+
+        boolean hasFilter =
+                sizeFilter != null ||
+                        minStock != null ||
+                        maxStock != null ||
+                        categoryId != null ||
+                        (keyword != null && !keyword.isBlank());
+
+        Page<Product> page = hasFilter
+                ? productRepository.filterByStockRange(
+                keyword, categoryId, sizeFilter, minStock, maxStock, pageable)
+                : productRepository.findAll(pageable);
+
+        return page.getContent();
     }
 }

@@ -16,7 +16,9 @@ public class CartMapper {
         CartDTO dto = new CartDTO();
         dto.setId(cart.getId());
         dto.setUserId(cart.getUser().getId());
-        dto.setItems(cart.getItems().stream().map(CartMapper::toDTO).collect(Collectors.toList()));
+        dto.setItems(cart.getItems().stream()
+                .map(CartMapper::toDTO)
+                .collect(Collectors.toList()));
         return dto;
     }
 

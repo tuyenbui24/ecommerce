@@ -55,7 +55,7 @@ public class StaffService {
         boolean isUpdate = request.getId() != null;
         Staff staff = isUpdate
                 ? staffRepo.findById(request.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + request.getId()))
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy quản trị với ID: " + request.getId()))
                 : new Staff();
 
         staff.setEmail(request.getEmail());
@@ -76,12 +76,12 @@ public class StaffService {
 
     public Staff getId(Integer id) throws UserNotFoundExp {
         return staffRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundExp("Could not find any staff with id: " + id));
+                .orElseThrow(() -> new UserNotFoundExp("Không tìm thấy bất kì quan trị với id: " + id));
     }
 
     public void delete(Integer id) throws UserNotFoundExp {
         Staff staff = staffRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundExp("Could not find any staff with ID " + id));
+                .orElseThrow(() -> new UserNotFoundExp("Không tìm thấy bất kì quản trị với ID " + id));
         staffRepo.delete(staff);
     }
 
@@ -92,5 +92,16 @@ public class StaffService {
     public boolean isEmailUnique(Integer id, String email) {
         Staff staffByEmail = staffRepo.getStaffByEmail(email);
         return staffByEmail == null || staffByEmail.getId().equals(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Staff> findForExport(String keyword) {
+        Pageable pageable = Pageable.unpaged();
+
+        Page<Staff> page = (keyword == null || keyword.isBlank())
+                ? staffRepo.findAll(pageable)
+                : staffRepo.searchS(keyword, pageable);
+
+        return page.getContent();
     }
 }

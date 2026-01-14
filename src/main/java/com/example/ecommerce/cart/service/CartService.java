@@ -121,7 +121,7 @@ public class CartService {
                 .orElse(null);
 
         int newQty = (item == null ? 0 : item.getQuantity()) + quantity;
-        if (newQty > stock) throw new RuntimeException("Số lượng vượt quá tồn kho size " + toLetter(canonical));
+        if (newQty > stock) throw new RuntimeException("Sản phẩm đã hết hàng" + toLetter(canonical));
 
         if (item == null) {
             item = CartItem.builder()
@@ -165,7 +165,7 @@ public class CartService {
         ProductSize ps = productSizeRepo.findByProduct_IdAndSizeIgnoreCase(item.getProduct().getId(), item.getSize())
                 .orElseThrow(() -> new RuntimeException("Size không tồn tại"));
         if (quantity > ps.getQuantity())
-            throw new RuntimeException("Số lượng vượt quá tồn kho size " + item.getSize());
+            throw new RuntimeException("Sản phẩm đã hết hàng " + item.getSize());
 
         item.setQuantity(quantity);
         cartItemRepo.save(item);

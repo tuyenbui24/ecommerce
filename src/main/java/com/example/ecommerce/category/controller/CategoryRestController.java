@@ -2,10 +2,13 @@ package com.example.ecommerce.category.controller;
 
 import com.example.ecommerce.category.entity.Category;
 import com.example.ecommerce.category.service.CategoryService;
+import com.example.ecommerce.export.CategoryCsvExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -65,5 +68,16 @@ public class CategoryRestController {
             @RequestParam String name) {
         boolean isUnique = categoryService.isNameUnique(id, name);
         return ResponseEntity.ok(isUnique);
+    }
+
+    @GetMapping("/export")
+    public void exportCategories(
+            @RequestParam(required = false) String keyword,
+            HttpServletResponse response
+    ) throws IOException {
+
+        var categories = categoryService.findForExport(keyword);
+        CategoryCsvExporter exporter = new CategoryCsvExporter();
+        exporter.export(categories, response);
     }
 }

@@ -26,7 +26,7 @@ public class FileUpload {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            throw new IOException("Could not save file: " + fileName, ex);
+            throw new IOException("Không thể lưu file: " + fileName, ex);
         }
     }
 
@@ -39,13 +39,13 @@ public class FileUpload {
                     try {
                         Files.delete(file);
                     } catch (IOException ex) {
-                        LOGGER.error("Could not delete file: " + file);
+                        LOGGER.error("Không thể xoá file: " + file);
                     }
                 }
             });
 
         } catch (IOException ex) {
-            LOGGER.error("Could not list directory: " + dirPath);
+            LOGGER.error("Không thể liệt kê thư mục: " + dirPath);
         }
     }
 }

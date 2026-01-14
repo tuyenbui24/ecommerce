@@ -32,4 +32,5 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
     public Page<Staff> searchS(String keyword, Pageable pageable);
 
     Optional<Staff> findByEmail(String email);
+    boolean existsByEmail(String email);
 }

@@ -8,6 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -60,6 +61,31 @@ public class Product {
         this.image = (image == null || image.isEmpty()) ? DEFAULT_IMAGE : image;
         this.category = category;
         this.enabled = true;
+    }
+
+    @Transient
+    public String getCategoryName() {
+        return category != null ? category.getName() : null;
+    }
+
+    @Transient
+    public Integer getTotalStock() {
+        if (sizes == null || sizes.isEmpty()) {
+            return quantity;
+        }
+        return sizes.stream()
+                .map(ps -> ps.getQuantity() == null ? 0 : ps.getQuantity())
+                .reduce(0, Integer::sum);
+    }
+
+    @Transient
+    public String getSizeDetail() {
+        if (sizes == null || sizes.isEmpty()) {
+            return "";
+        }
+        return sizes.stream()
+                .map(ps -> ps.getSize() + ":" + (ps.getQuantity() == null ? 0 : ps.getQuantity()))
+                .collect(Collectors.joining(" | "));
     }
 
 //    @Transient

@@ -12,8 +12,10 @@ public class OrderMapper {
         dto.setOrderTime(order.getOrderTime());
         dto.setTotalPrice(order.getTotalPrice());
         dto.setStatus(order.getStatus().name());
+        dto.setStatusLabel(order.getStatus().viLabel());
         dto.setNote(order.getNote());
         dto.setShippingAddress(order.getShippingAddress());
+        dto.setPhoneNumber(order.getPhoneNumber());
         dto.setUserFullName(order.getUser() != null ? order.getUser().getFullName() : "Khách");
         dto.setItems(order.getItems().stream()
                 .map(item -> {
@@ -26,6 +28,9 @@ public class OrderMapper {
                     itemDTO.setSize(item.getSize());
                     return itemDTO;
                 }).toList());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setGatewayTxnNo(order.getGatewayTxnNo());
+        dto.setPaidAt(order.getPaidAt());
         return dto;
     }
 }

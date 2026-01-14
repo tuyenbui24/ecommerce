@@ -28,13 +28,27 @@ public class Order {
     @Column(name = "shipping_address")
     private String shippingAddress;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
     private LocalDateTime orderTime;
     private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod paymentMethod = PaymentMethod.COD;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items = new ArrayList<>();
+
+    @Column(name = "gateway_txn_no", length = 50)
+    private String gatewayTxnNo;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
 }
 

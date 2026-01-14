@@ -1,11 +1,14 @@
 package com.example.ecommerce.user.controller;
 
+import com.example.ecommerce.export.UserCsvExporter;
 import com.example.ecommerce.user.dto.UserDTO;
 import com.example.ecommerce.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,5 +44,16 @@ public class UserRestController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/export")
+    public void exportUsers(
+            @RequestParam(defaultValue = "") String keyword,
+            HttpServletResponse response
+    ) throws IOException {
+
+        var users = userService.findForExport(keyword);
+        UserCsvExporter exporter = new UserCsvExporter();
+        exporter.export(users, response);
     }
 }

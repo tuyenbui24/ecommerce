@@ -81,4 +81,15 @@ public class CategoryService {
 
         return existing.getId().equals(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<Category> findForExport(String keyword) {
+        Pageable pageable = Pageable.unpaged();
+
+        Page<Category> page = (keyword == null || keyword.isBlank())
+                ? categoryRepo.findAll(pageable)
+                : categoryRepo.searchC(keyword, pageable);
+
+        return page.getContent();
+    }
 }

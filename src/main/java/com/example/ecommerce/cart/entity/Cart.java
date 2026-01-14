@@ -25,10 +25,11 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,
             orphanRemoval = true, fetch = FetchType.EAGER)
+    @OrderBy("id ASC")
     private Set<CartItem> items = new HashSet<>();
 
-    public void addItem(CartItem item) {
-        items.add(item);
-        item.setCart(this);
-    }
+//    public void addItem(CartItem item) {
+//        items.add(item);
+//        item.setCart(this);
+//    }
 }
